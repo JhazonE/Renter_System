@@ -57,14 +57,16 @@ const styles = StyleSheet.create({
   container: {
     padding: 12,
     flex: 1,
+    backgroundColor: colors.white,
   },
   sectionHeader: {
     ...typography.tiny,
-    color: colors.slate400,
+    color: colors.slate500,
     textTransform: 'uppercase',
     paddingHorizontal: 12,
     marginBottom: 8,
     letterSpacing: 1,
+    fontWeight: '700',
   },
   item: {
     flexDirection: 'row',
@@ -75,20 +77,21 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   activeItem: {
-    backgroundColor: 'rgba(17, 50, 212, 0.1)',
+    backgroundColor: colors.indigo50,
   },
   text: {
     ...typography.body,
     fontSize: 14,
-    color: colors.slate400,
+    color: colors.slate500,
+    fontWeight: '500',
   },
   activeText: {
     color: colors.primary,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   badge: {
     marginLeft: 'auto',
-    backgroundColor: 'rgba(17, 50, 212, 0.2)',
+    backgroundColor: colors.indigo100,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -97,5 +100,6 @@ const styles = StyleSheet.create({
     ...typography.tiny,
     color: colors.primary,
     fontSize: 10,
+    fontWeight: '800',
   },
 });

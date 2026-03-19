@@ -239,8 +239,8 @@ export const Registrations = () => {
 
       <View style={styles.statsRow}>
         <View style={styles.statCard}>
-          <View style={[styles.statIcon, { backgroundColor: 'rgba(17, 50, 212, 0.1)' }]}>
-            <Clock size={20} color={colors.primary} />
+          <View style={[styles.statIcon, { backgroundColor: colors.indigo50 }]}>
+            <Clock size={22} color={colors.primary} />
           </View>
           <View>
             <Text style={styles.statValue}>{stats.total}</Text>
@@ -248,8 +248,8 @@ export const Registrations = () => {
           </View>
         </View>
         <View style={styles.statCard}>
-          <View style={[styles.statIcon, { backgroundColor: 'rgba(245, 158, 11, 0.1)' }]}>
-            <Clock size={20} color="#F59E0B" />
+          <View style={[styles.statIcon, { backgroundColor: "rgba(245, 158, 11, 0.08)" }]}>
+            <Clock size={22} color={colors.amber600} />
           </View>
           <View>
             <Text style={styles.statValue}>{stats.pending}</Text>
@@ -257,8 +257,8 @@ export const Registrations = () => {
           </View>
         </View>
         <View style={styles.statCard}>
-          <View style={[styles.statIcon, { backgroundColor: 'rgba(16, 185, 129, 0.1)' }]}>
-            <CheckCircle size={20} color="#10B981" />
+          <View style={[styles.statIcon, { backgroundColor: "rgba(16, 185, 129, 0.08)" }]}>
+            <CheckCircle size={22} color={colors.emerald600} />
           </View>
           <View>
             <Text style={styles.statValue}>{stats.approved}</Text>
@@ -568,8 +568,8 @@ export const ActiveRenters = () => {
 
       <View style={styles.statsRow}>
         <View style={styles.statCard}>
-          <View style={[styles.statIcon, { backgroundColor: 'rgba(17, 50, 212, 0.1)' }]}>
-            <Search size={20} color={colors.primary} />
+          <View style={[styles.statIcon, { backgroundColor: colors.indigo50 }]}>
+            <Search size={22} color={colors.primary} />
           </View>
           <View>
             <Text style={styles.statValue}>1,284</Text>
@@ -577,8 +577,8 @@ export const ActiveRenters = () => {
           </View>
         </View>
         <View style={styles.statCard}>
-          <View style={[styles.statIcon, { backgroundColor: 'rgba(245, 158, 11, 0.1)' }]}>
-            <Clock size={20} color="#F59E0B" />
+          <View style={[styles.statIcon, { backgroundColor: 'rgba(245, 158, 11, 0.08)' }]}>
+            <Clock size={22} color={colors.amber600} />
           </View>
           <View>
             <Text style={styles.statValue}>42</Text>
@@ -1032,75 +1032,159 @@ export const AdminInteractive = () => <SkeletonScreen title="Admin Interactive" 
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.backgroundLight, padding: 24 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 },
-  title: { fontSize: 24, fontWeight: '900', color: colors.slate900, fontFamily: 'PublicSans-Black' },
-  subtitle: { fontSize: 14, color: colors.slate600, marginTop: 4, fontFamily: 'PublicSans-Regular' },
-  addButton: { backgroundColor: colors.primary, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 8 },
-  addButtonText: { color: colors.white, fontWeight: '700', fontSize: 14, fontFamily: 'PublicSans-Bold' },
-  statsRow: { flexDirection: 'row', gap: 16, marginBottom: 24 },
-  statCard: { flex: 1, backgroundColor: colors.white, padding: 16, borderRadius: 12, flexDirection: 'row', alignItems: 'center', gap: 16, borderWeight: 1, borderColor: colors.slate100 },
-  statIcon: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
-  statValue: { fontSize: 20, fontWeight: '900', color: colors.slate900, fontFamily: 'PublicSans-Black' },
-  statLabel: { fontSize: 12, color: colors.slate500, fontFamily: 'PublicSans-Regular' },
-  filtersRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  tabs: { flexDirection: 'row', gap: 8 },
-  tab: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: colors.slate100 },
-  activeTab: { backgroundColor: colors.primary },
-  tabText: { fontSize: 13, fontWeight: '600', color: colors.slate600, fontFamily: 'PublicSans-Bold' },
-  activeTabText: { color: colors.white },
-  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: colors.white, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, minWidth: 300, borderWidth: 1, borderColor: colors.slate200 },
-  searchInput: { padding: 0, fontSize: 14, color: colors.slate900, width: '100%', fontFamily: 'PublicSans-Regular' },
-  tableCard: { backgroundColor: colors.white, borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: colors.slate200 },
-  cell: { flex: 1, justifyContent: 'center', paddingVertical: 12 },
-  avatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { color: colors.white, fontSize: 12, fontWeight: '900', fontFamily: 'PublicSans-Black' },
-  userName: { fontSize: 14, fontWeight: '700', color: colors.slate900, fontFamily: 'PublicSans-Bold' },
-  userEmail: { fontSize: 12, color: colors.slate500, fontFamily: 'PublicSans-Regular' },
-  unitText: { fontSize: 14, color: colors.slate700, fontFamily: 'PublicSans-Regular' },
-  statusBadge: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, borderWidth: 1 },
-  statusBadgeText: { fontSize: 11, fontWeight: '700', fontFamily: 'PublicSans-Bold' },
-  pendingBadge: { backgroundColor: 'rgba(245, 158, 11, 0.1)', borderColor: 'rgba(245, 158, 11, 0.2)' },
-  pendingText: { color: '#F59E0B' },
-  approvedBadge: { backgroundColor: 'rgba(16, 185, 129, 0.1)', borderColor: 'rgba(16, 185, 129, 0.2)' },
-  approvedText: { color: '#10B981' },
-  rejectedBadge: { backgroundColor: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.2)' },
-  rejectedText: { color: colors.rose500 },
-  dateText: { fontSize: 13, color: colors.slate600, fontFamily: 'PublicSans-Regular' },
-  actionsCell: { flexDirection: 'row', gap: 12, alignItems: 'center', flex: 0.5 },
-  emptyState: { padding: 40, alignItems: 'center' },
-  emptyStateText: { color: colors.slate500, fontFamily: 'PublicSans-Regular' },
-  placeholder: { flex: 1, backgroundColor: colors.slate50, borderRadius: 12, borderStyle: 'dashed', borderWidth: 2, borderColor: colors.slate200, alignItems: 'center', justifyContent: 'center', marginTop: 20 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 },
+  title: { fontSize: 28, fontWeight: '900', color: colors.slate900, fontFamily: 'PublicSans-Black', letterSpacing: -0.5 },
+  subtitle: { fontSize: 15, color: colors.slate500, marginTop: 6, fontFamily: 'PublicSans-Regular', lineHeight: 22 },
+  addButton: { 
+    backgroundColor: colors.primary, 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 10, 
+    paddingHorizontal: 20, 
+    paddingVertical: 14, 
+    borderRadius: 12,
+    ...Platform.select({
+      web: { boxShadow: '0px 4px 8px rgba(17, 50, 212, 0.2)' },
+      default: { shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 }
+    })
+  },
+  addButtonText: { color: colors.white, fontWeight: '800', fontSize: 15, fontFamily: 'PublicSans-Bold' },
+  statsRow: { flexDirection: 'row', gap: 20, marginBottom: 32 },
+  statCard: { 
+    flex: 1, 
+    backgroundColor: colors.white, 
+    padding: 20, 
+    borderRadius: 16, 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 16, 
+    borderWidth: 1, 
+    borderColor: colors.slate100,
+    ...Platform.select({
+      web: { boxShadow: '0px 2px 10px rgba(15, 23, 42, 0.05)' },
+      default: { shadowColor: colors.slate900, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 }
+    })
+  },
+  statIcon: { width: 52, height: 52, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  statValue: { fontSize: 24, fontWeight: '900', color: colors.slate900, fontFamily: 'PublicSans-Black' },
+  statLabel: { fontSize: 13, color: colors.slate500, fontFamily: 'PublicSans-Regular', marginTop: 2 },
+  filtersRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  tabs: { flexDirection: 'row', gap: 10, backgroundColor: colors.slate100, padding: 4, borderRadius: 12 },
+  tab: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8 },
+  activeTab: { 
+    backgroundColor: colors.white,
+    ...Platform.select({
+      web: { boxShadow: '0px 2px 4px rgba(15, 23, 42, 0.1)' },
+      default: { shadowColor: colors.slate900, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }
+    })
+  },
+  tabText: { fontSize: 13, fontWeight: '700', color: colors.slate500, fontFamily: 'PublicSans-Bold' },
+  activeTabText: { color: colors.primary },
+  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.white, paddingHorizontal: 16, borderRadius: 12, minWidth: 420, height: 48, borderWidth: 1, borderColor: colors.slate200 },
+  searchInput: { 
+    flex: 1, 
+    height: '100%',
+    fontSize: 15, 
+    color: colors.slate900, 
+    fontFamily: 'PublicSans-Regular',
+    ...Platform.select({
+      web: { outlineWidth: 0 },
+      default: {}
+    })
+  },
+  tableCard: { 
+    backgroundColor: colors.white, 
+    borderRadius: 16, 
+    overflow: 'hidden', 
+    borderWidth: 1, 
+    borderColor: colors.slate100,
+    ...Platform.select({
+      web: { boxShadow: '0px 4px 15px rgba(15, 23, 42, 0.03)' },
+      default: { shadowColor: colors.slate900, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.03, shadowRadius: 15, elevation: 2 }
+    })
+  },
+  cell: { flex: 1, justifyContent: 'center', paddingVertical: 16 },
+  avatar: { width: 40, height: 40, borderRadius: 12, backgroundColor: colors.indigo50, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { color: colors.primary, fontSize: 14, fontWeight: '800', fontFamily: 'PublicSans-Black' },
+  userName: { fontSize: 15, fontWeight: '700', color: colors.slate900, fontFamily: 'PublicSans-Bold' },
+  userEmail: { fontSize: 13, color: colors.slate500, fontFamily: 'PublicSans-Regular', marginTop: 2 },
+  unitText: { fontSize: 14, color: colors.slate700, fontFamily: 'PublicSans-Medium' },
+  statusBadge: { alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1 },
+  statusBadgeText: { fontSize: 12, fontWeight: '800', fontFamily: 'PublicSans-Bold', textTransform: 'uppercase', letterSpacing: 0.5 },
+  pendingBadge: { backgroundColor: 'rgba(245, 158, 11, 0.08)', borderColor: 'rgba(245, 158, 11, 0.2)' },
+  pendingText: { color: colors.amber600 },
+  approvedBadge: { backgroundColor: 'rgba(16, 185, 129, 0.08)', borderColor: 'rgba(16, 185, 129, 0.2)' },
+  approvedText: { color: colors.emerald600 },
+  rejectedBadge: { backgroundColor: 'rgba(239, 68, 68, 0.08)', borderColor: 'rgba(239, 68, 68, 0.2)' },
+  rejectedText: { color: colors.rose600 },
+  dateText: { fontSize: 13, color: colors.slate500, fontFamily: 'PublicSans-Regular' },
+  actionsCell: { flexDirection: 'row', gap: 16, alignItems: 'center', flex: 0.5 },
+  emptyState: { padding: 60, alignItems: 'center' },
+  emptyStateText: { color: colors.slate400, fontSize: 15, fontFamily: 'PublicSans-Regular' },
+  placeholder: { flex: 1, backgroundColor: colors.slate50, borderRadius: 16, borderStyle: 'dashed', borderWidth: 2, borderColor: colors.slate200, alignItems: 'center', justifyContent: 'center', marginTop: 20 },
   placeholderText: { color: colors.slate400, fontSize: 16, fontFamily: 'PublicSans-Regular' },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.8)', justifyContent: 'center', alignItems: 'center', padding: 20 },
-  modalContent: { backgroundColor: colors.white, width: '100%', maxWidth: 650, borderRadius: 20, overflow: 'hidden' },
-  modalHeader: { padding: 24, borderBottomWidth: 1, borderBottomColor: colors.slate100 },
-  modalTitle: { fontSize: 20, fontWeight: '900', color: colors.slate900, fontFamily: 'PublicSans-Black' },
-  modalSubtitle: { fontSize: 14, color: colors.slate500, marginTop: 4, fontFamily: 'PublicSans-Regular' },
-  modalBody: { padding: 24, maxHeight: 500 },
-  inputRow: { flexDirection: 'row', gap: 16, marginBottom: 16 },
-  inputGroup: { gap: 8, marginBottom: 16 },
-  inputLabel: { fontSize: 13, fontWeight: '700', color: colors.slate700, fontFamily: 'PublicSans-Bold' },
-  modalInput: { backgroundColor: colors.slate50, borderWidth: 1, borderColor: colors.slate200, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, fontSize: 14, color: colors.slate900, fontFamily: 'PublicSans-Regular' },
-  fingerprintButton: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: 'rgba(17, 50, 212, 0.05)', borderWidth: 1, borderColor: colors.primary, borderRadius: 8, padding: 16, borderStyle: 'dashed' },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.7)', justifyContent: 'center', alignItems: 'center', padding: 24 },
+  modalContent: { 
+    backgroundColor: colors.white, 
+    width: '100%', 
+    maxWidth: 680, 
+    borderRadius: 24,
+    ...Platform.select({
+      web: { boxShadow: '0px 20px 30px rgba(0, 0, 0, 0.1)' },
+      default: { shadowColor: '#000', shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.2, shadowRadius: 30, elevation: 10 }
+    })
+  },
+  modalHeader: { padding: 32, borderBottomWidth: 1, borderBottomColor: colors.slate100 },
+  modalTitle: { fontSize: 24, fontWeight: '900', color: colors.slate900, fontFamily: 'PublicSans-Black' },
+  modalSubtitle: { fontSize: 15, color: colors.slate500, marginTop: 8, fontFamily: 'PublicSans-Regular' },
+  modalBody: { padding: 32, maxHeight: 600 },
+  inputRow: { flexDirection: 'row', gap: 20, marginBottom: 20 },
+  inputGroup: { gap: 10, marginBottom: 20 },
+  inputLabel: { fontSize: 14, fontWeight: '800', color: colors.slate700, fontFamily: 'PublicSans-Bold' },
+  modalInput: { 
+    backgroundColor: colors.slate50, 
+    borderWidth: 1, 
+    borderColor: colors.slate200, 
+    borderRadius: 12, 
+    paddingHorizontal: 16, 
+    paddingVertical: 14, 
+    fontSize: 15, 
+    color: colors.slate900, 
+    fontFamily: 'PublicSans-Regular',
+    ...Platform.select({
+      web: { outlineWidth: 0 },
+      default: {}
+    })
+  },
+  fingerprintButton: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: colors.indigo50, borderWidth: 1, borderColor: colors.primary, borderRadius: 12, padding: 20, borderStyle: 'dashed' },
   fingerprintButtonActive: { backgroundColor: colors.primary, borderStyle: 'solid' },
-  fingerprintButtonText: { color: colors.primary, fontWeight: '700', fontSize: 14, flex: 1, fontFamily: 'PublicSans-Bold' },
+  fingerprintButtonText: { color: colors.primary, fontWeight: '800', fontSize: 15, flex: 1, fontFamily: 'PublicSans-Bold' },
   fingerprintButtonTextActive: { color: colors.white },
-  modalFooter: { padding: 24, borderTopWidth: 1, borderTopColor: colors.slate100, flexDirection: 'row', justifyContent: 'flex-end', gap: 12 },
-  cancelButton: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 8 },
-  cancelButtonText: { color: colors.slate600, fontWeight: '700', fontFamily: 'PublicSans-Bold' },
-  submitButton: { backgroundColor: colors.primary, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8 },
-  submitButtonText: { color: colors.white, fontWeight: '900', fontFamily: 'PublicSans-Black' },
-  scannerContainer: { alignItems: 'center', paddingVertical: 30, gap: 20 },
-  scannerHexagon: { width: 140, height: 140, borderRadius: 70, backgroundColor: 'rgba(17, 50, 212, 0.05)', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.primary, position: 'relative', overflow: 'hidden' },
-  scannerScanline: { position: 'absolute', width: '100%', height: 2, backgroundColor: colors.primary, shadowColor: colors.primary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 10, elevation: 5 },
-  scannerStatus: { fontSize: 18, fontWeight: '900', color: colors.slate900, marginTop: 10, fontFamily: 'PublicSans-Black' },
-  progressContainer: { width: '80%', height: 6, backgroundColor: colors.slate100, borderRadius: 3, overflow: 'hidden' },
+  modalFooter: { padding: 32, borderTopWidth: 1, borderTopColor: colors.slate100, flexDirection: 'row', justifyContent: 'flex-end', gap: 16 },
+  cancelButton: { paddingHorizontal: 24, paddingVertical: 14, borderRadius: 12 },
+  cancelButtonText: { color: colors.slate500, fontWeight: '700', fontSize: 15, fontFamily: 'PublicSans-Bold' },
+  submitButton: { 
+    backgroundColor: colors.primary, 
+    paddingHorizontal: 32, 
+    paddingVertical: 14, 
+    borderRadius: 12,
+    ...Platform.select({
+      web: { boxShadow: '0px 4px 8px rgba(17, 50, 212, 0.3)' },
+      default: { shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 }
+    })
+  },
+  submitButtonText: { color: colors.white, fontWeight: '900', fontSize: 15, fontFamily: 'PublicSans-Black' },
+  scannerContainer: { alignItems: 'center', paddingVertical: 40, gap: 24 },
+  scannerHexagon: { width: 160, height: 160, borderRadius: 80, backgroundColor: colors.indigo50, alignItems: 'center', justifyContent: 'center', borderWidth: 3, borderColor: colors.primary, position: 'relative', overflow: 'hidden' },
+  scannerScanline: { position: 'absolute', width: '100%', height: 3, backgroundColor: colors.primary, shadowColor: colors.primary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 10, elevation: 5 },
+  scannerStatus: { fontSize: 20, fontWeight: '900', color: colors.slate900, marginTop: 12, fontFamily: 'PublicSans-Black' },
+  progressContainer: { width: '80%', height: 8, backgroundColor: colors.slate100, borderRadius: 4, overflow: 'hidden' },
   progressBar: { height: '100%', backgroundColor: colors.primary },
-  progressText: { fontSize: 12, color: colors.slate500, fontWeight: '700', fontFamily: 'PublicSans-Bold' },
-  scanIndicatorRow: { flexDirection: 'row', gap: 12 },
-  scanDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.slate200 },
-  scanDotActive: { backgroundColor: colors.primary, transform: [{ scale: 1.2 }] },
+  progressText: { fontSize: 14, color: colors.slate500, fontWeight: '800', fontFamily: 'PublicSans-Bold' },
+  scanIndicatorRow: { flexDirection: 'row', gap: 16 },
+  scanDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.slate200 },
+  scanDotActive: { backgroundColor: colors.primary, transform: [{ scale: 1.3 }] },
   scanDotDone: { backgroundColor: colors.emerald500 },
-  tinyText: { fontSize: 10, color: colors.slate600, fontFamily: 'PublicSans-Regular' }
+  tinyText: { fontSize: 11, color: colors.slate500, fontFamily: 'PublicSans-Regular' }
 });
 

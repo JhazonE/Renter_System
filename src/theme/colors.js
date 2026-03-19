@@ -1,7 +1,5 @@
 export const colors = {
-  primary: "#1132d4",
-  backgroundLight: "#f6f6f8",
-  backgroundDark: "#101322",
+  white: "#ffffff",
   slate50: "#f8fafc",
   slate100: "#f1f5f9",
   slate200: "#e2e8f0",
@@ -12,8 +10,23 @@ export const colors = {
   slate700: "#334155",
   slate800: "#1e293b",
   slate900: "#0f172a",
+  primary: "#1132d4",
+  secondary: "#6366f1",
+  accent: "#8b5cf6",
   emerald500: "#10b981",
+  emerald600: "#059669",
   amber500: "#f59e0b",
+  amber600: "#d97706",
   rose500: "#f43f5e",
-  white: "#ffffff",
+  rose600: "#e11d48",
+  indigo50: "#eef2ff",
+  indigo100: "#e0e7ff",
+  indigo600: "#4f46e5",
+  background: "#f8fafc", // slate50
+  surface: "#ffffff",
+  border: "#e2e8f0", // slate200
+  text: "#0f172a", // slate900
+  textMuted: "#64748b", // slate500
+  backgroundLight: "#f8fafc",
+  backgroundDark: "#f1f5f9", // repurposed for light theme variation
 };

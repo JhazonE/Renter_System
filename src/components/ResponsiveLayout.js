@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     minHeight: '100vh',
-    backgroundColor: colors.backgroundDark,
+    backgroundColor: colors.background,
   },
   contentWrapper: {
     flex: 1,
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   sidebarWrapper: {
     width: 256,
     borderRightWidth: 1,
-    borderRightColor: 'rgba(17, 50, 212, 0.1)',
+    borderRightColor: colors.slate100,
   },
   mainContent: {
     flex: 1,

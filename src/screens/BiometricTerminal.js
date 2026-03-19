@@ -138,8 +138,8 @@ export const BiometricTerminal = ({ onExit }) => {
   return (
     <View style={styles.outerContainer}>
       {/* Background Glows */}
-      <View style={[styles.bgGlow, { top: -100, left: -100, backgroundColor: 'rgba(17, 50, 212, 0.15)' }]} />
-      <View style={[styles.bgGlow, { bottom: -100, right: -100, backgroundColor: 'rgba(16, 185, 129, 0.1)' }]} />
+      <View style={[styles.bgGlow, { top: -100, left: -100, backgroundColor: 'rgba(17, 50, 212, 0.08)' }]} />
+      <View style={[styles.bgGlow, { bottom: -100, right: -100, backgroundColor: 'rgba(16, 185, 129, 0.05)' }]} />
 
       {/* Header Bar */}
       <View style={styles.header}>
@@ -182,7 +182,9 @@ export const BiometricTerminal = ({ onExit }) => {
                 styles.scannerCircle,
                 {
                   borderColor: currentInfo.color,
-                  shadowColor: currentInfo.color,
+                  ...Platform.OS === 'web' 
+                    ? { boxShadow: `0px 0px 20px ${currentInfo.color}44` } 
+                    : { shadowColor: currentInfo.color, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 20 },
                   opacity: glowAnim.interpolate({
                     inputRange: [0, 1],
                     outputRange: [0.6, 1]
@@ -224,7 +226,7 @@ export const BiometricTerminal = ({ onExit }) => {
             {/* Progress Bar */}
             <View style={styles.progressSection}>
               <View style={styles.progressContainer}>
-                <View style={[styles.progressBackground, { borderColor: 'rgba(255,255,255,0.05)' }]}>
+                <View style={[styles.progressBackground, { borderColor: colors.slate100 }]}>
                   <View style={[styles.progressBar, { width: `${progress}%`, backgroundColor: currentInfo.color }]} />
                 </View>
               </View>
@@ -248,7 +250,7 @@ export const BiometricTerminal = ({ onExit }) => {
               ) : (
                 <View style={styles.successActions}>
                   <TouchableOpacity style={styles.secondaryActionButton} onPress={reset}>
-                    <RefreshCw size={18} color={colors.slate300} style={{ marginRight: 8 }} />
+                    <RefreshCw size={18} color={colors.slate500} style={{ marginRight: 8 }} />
                     <Text style={styles.secondaryButtonText}>RESET TERMINAL</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={[styles.primaryActionButton, { backgroundColor: colors.emerald500 }]} onPress={reset}>
@@ -292,7 +294,7 @@ export const BiometricTerminal = ({ onExit }) => {
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    backgroundColor: '#020617', // Deeper than backgroundDark
+    backgroundColor: colors.background,
     width: '100%',
     height: '100%',
     overflow: 'hidden',
@@ -302,7 +304,6 @@ const styles = StyleSheet.create({
     width: 600,
     height: 600,
     borderRadius: 300,
-    opacity: 0.4,
   },
   header: {
     paddingHorizontal: 32,
@@ -311,8 +312,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(17, 50, 212, 0.1)',
-    backgroundColor: 'rgba(2, 6, 23, 0.8)',
+    borderBottomColor: colors.slate100,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     zIndex: 10,
   },
   headerLeft: {
@@ -323,23 +324,25 @@ const styles = StyleSheet.create({
   terminalIcon: {
     width: 40,
     height: 40,
-    borderRadius: 8,
-    backgroundColor: 'rgba(17, 50, 212, 0.1)',
+    borderRadius: 12,
+    backgroundColor: colors.indigo50,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(17, 50, 212, 0.2)',
+    borderColor: colors.indigo100,
   },
   terminalTitle: {
     ...typography.h3,
-    color: colors.white,
+    color: colors.slate900,
     letterSpacing: 1.5,
     fontSize: 16,
+    fontWeight: '900',
   },
   terminalVersion: {
     ...typography.tiny,
     color: colors.slate500,
     marginTop: 2,
+    fontWeight: '600',
   },
   headerRight: {
     flexDirection: 'row',
@@ -350,12 +353,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(17, 50, 212, 0.05)',
+    backgroundColor: colors.indigo50,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(17, 50, 212, 0.1)',
+    borderColor: colors.indigo100,
   },
   statusDot: {
     width: 8,
@@ -364,14 +367,15 @@ const styles = StyleSheet.create({
   },
   statusLabelText: {
     ...typography.tiny,
-    color: colors.slate300,
+    color: colors.primary,
     letterSpacing: 1,
+    fontWeight: '800',
   },
   exitButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.slate100,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -381,26 +385,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 40,
   },
-  terminalFrame: {
-    width: '100%',
-    maxWidth: 600,
-    backgroundColor: 'rgba(15, 23, 42, 0.6)',
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(17, 50, 212, 0.2)',
-    padding: 40,
-    position: 'relative',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.5,
-    shadowRadius: 40,
-  },
+  terminalFrame: Platform.OS === 'web'
+    ? { width: '100%', maxWidth: 600, backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 32, borderWidth: 1, borderColor: colors.slate100, padding: 48, position: 'relative', boxShadow: '0px 20px 40px rgba(15, 23, 42, 0.1)' }
+    : { width: '100%', maxWidth: 600, backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 32, borderWidth: 1, borderColor: colors.slate100, padding: 48, position: 'relative', shadowColor: colors.slate900, shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.1, shadowRadius: 40 },
   corner: {
     position: 'absolute',
     width: 24,
     height: 24,
     borderColor: colors.primary,
-    opacity: 0.5,
+    opacity: 0.3,
   },
   contentInner: {
     alignItems: 'center',
@@ -410,32 +403,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 24,
   },
-  scannerCircle: {
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(2, 6, 23, 0.5)',
-    overflow: 'hidden',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 20,
-  },
+  scannerCircle: Platform.OS === 'web'
+    ? { width: 220, height: 220, borderRadius: 110, borderWidth: 3, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.slate50, overflow: 'hidden' }
+    : { width: 220, height: 220, borderRadius: 110, borderWidth: 3, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.slate50, overflow: 'hidden', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 20 },
   iconContainer: {
     zIndex: 2,
   },
-  scanline: {
-    position: 'absolute',
-    width: '100%',
-    height: 4,
-    shadowColor: 'white',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 10,
-    zIndex: 3,
-  },
+  scanline: Platform.select({
+    web: { position: 'absolute', width: '100%', height: 4, zIndex: 3 },
+    default: { position: 'absolute', width: '100%', height: 4, zIndex: 3 }
+  }),
   textContainer: {
     alignItems: 'center',
     gap: 8,
@@ -444,12 +421,14 @@ const styles = StyleSheet.create({
     ...typography.h1,
     fontSize: 24,
     letterSpacing: 4,
+    fontWeight: '900',
   },
   statusSubtitle: {
     ...typography.body,
-    color: colors.slate400,
+    color: colors.slate500,
     fontSize: 14,
     letterSpacing: 1,
+    fontWeight: '600',
   },
   progressSection: {
     width: '100%',
@@ -460,15 +439,15 @@ const styles = StyleSheet.create({
   },
   progressBackground: {
     width: '100%',
-    height: 8,
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderRadius: 4,
+    height: 10,
+    backgroundColor: colors.slate100,
+    borderRadius: 5,
     overflow: 'hidden',
     borderWidth: 1,
   },
   progressBar: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: 5,
   },
   progressMeta: {
     flexDirection: 'row',
@@ -477,29 +456,20 @@ const styles = StyleSheet.create({
   },
   progressPercent: {
     ...typography.tiny,
-    color: colors.slate400,
+    color: colors.slate500,
+    fontWeight: '800',
   },
   progressHash: {
     ...typography.tiny,
-    color: colors.slate600,
+    color: colors.slate400,
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   actionsContainer: {
     width: '100%',
   },
-  primaryActionButton: {
-    width: '100%',
-    height: 56,
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-  },
+  primaryActionButton: Platform.OS === 'web'
+    ? { width: '100%', height: 60, backgroundColor: colors.primary, borderRadius: 16, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', boxShadow: '0px 8px 20px rgba(17, 50, 212, 0.3)' }
+    : { width: '100%', height: 60, backgroundColor: colors.primary, borderRadius: 16, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', shadowColor: colors.primary, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16 },
   actionButtonText: {
     ...typography.body,
     color: colors.white,
@@ -512,18 +482,19 @@ const styles = StyleSheet.create({
   },
   secondaryActionButton: {
     flex: 1,
-    height: 56,
-    borderRadius: 12,
+    height: 60,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.slate200,
+    backgroundColor: colors.white,
   },
   secondaryButtonText: {
     ...typography.body,
-    color: colors.slate300,
-    fontWeight: '600',
+    color: colors.slate600,
+    fontWeight: '800',
   },
   footerStats: {
     flexDirection: 'row',
@@ -535,18 +506,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    opacity: 0.6,
   },
   statText: {
     ...typography.tiny,
-    color: colors.slate400,
+    color: colors.slate500,
     letterSpacing: 1,
+    fontWeight: '700',
   },
   statDivider: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.slate800,
+    backgroundColor: colors.slate200,
   },
   decorationLeft: {
     position: 'absolute',
