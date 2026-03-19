@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "react-native",
+    "paths": {
+      "*": ["*"],
+      "src/*": ["src/*"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    ".expo"
+  ]
+}
