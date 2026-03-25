@@ -1,0 +1,49 @@
+export const ROLES = {
+  SUPER_ADMIN: 'Super Admin',
+  ADMINISTRATOR: 'Administrator',
+  MANAGER: 'Manager',
+  STAFF: 'Staff'
+};
+
+export const PERMISSIONS = {
+  MANAGE_USERS: 'manage_users',
+  MANAGE_REGISTRATIONS: 'manage_registrations',
+  VIEW_LOGS: 'view_logs',
+  SYSTEM_CONFIG: 'system_config',
+  VIEW_ANALYTICS: 'view_analytics',
+  VIEW_REPORTS: 'view_reports',
+};
+
+export const ROLE_PERMISSIONS = {
+  [ROLES.SUPER_ADMIN]: [
+    PERMISSIONS.MANAGE_USERS,
+    PERMISSIONS.MANAGE_REGISTRATIONS,
+    PERMISSIONS.VIEW_LOGS,
+    PERMISSIONS.SYSTEM_CONFIG,
+    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_REPORTS,
+  ],
+  [ROLES.ADMINISTRATOR]: [
+    PERMISSIONS.MANAGE_USERS,
+    PERMISSIONS.MANAGE_REGISTRATIONS,
+    PERMISSIONS.VIEW_LOGS,
+    PERMISSIONS.SYSTEM_CONFIG,
+    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_REPORTS,
+  ],
+  [ROLES.MANAGER]: [
+    PERMISSIONS.MANAGE_REGISTRATIONS,
+    PERMISSIONS.VIEW_LOGS,
+    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_REPORTS,
+  ],
+  [ROLES.STAFF]: [
+    PERMISSIONS.MANAGE_REGISTRATIONS,
+    PERMISSIONS.VIEW_REPORTS,
+  ],
+};
+
+export const hasPermission = (role, permission) => {
+  const permissions = ROLE_PERMISSIONS[role] || [];
+  return permissions.includes(permission);
+};

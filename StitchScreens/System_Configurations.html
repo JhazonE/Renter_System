@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1132d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>SecureAccess - System Configurations</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-10 py-3 bg-background-light dark:bg-background-dark sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M47.2426 24L24 47.2426L0.757355 24L24 0.757355L47.2426 24ZM12.2426 21H35.7574L24 9.24264L12.2426 21Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">SecureAccess</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Logs</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Users</a>
+<a class="text-primary text-sm font-bold border-b-2 border-primary pb-0.5" href="#">Settings</a>
+</nav>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700 transition-all">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700 transition-all">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-10 px-4 md:px-10">
+<div class="layout-content-container flex flex-col max-w-[1024px] flex-1 gap-10">
+<!-- Page Title -->
+<div class="flex flex-col gap-2">
+<h1 class="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">System Configurations</h1>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal">Manage global security thresholds, notification triggers, and site identification.</p>
+</div>
+<!-- Section: Property Info -->
+<section class="bg-white dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800">
+<h2 class="text-slate-900 dark:text-white text-xl font-bold">General Property Information</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Site identification and localization details.</p>
+</div>
+<div class="p-6 flex flex-col gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<label class="flex flex-col gap-2">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Property Name</span>
+<input class="form-input w-full rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-primary focus:ring-primary h-12" type="text" value="Main Research Facility Alpha"/>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">System ID</span>
+<input class="form-input w-full rounded-lg border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 cursor-not-allowed h-12" disabled="" type="text" value="SEC-8829-XP"/>
+</label>
+</div>
+<label class="flex flex-col gap-2">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Location Address</span>
+<div class="relative">
+<input class="form-input w-full rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-primary focus:ring-primary h-12 pl-10" type="text" value="742 Evergreen Terrace, Sector 7G, Springfield"/>
+<span class="material-symbols-outlined absolute left-3 top-3 text-slate-400">location_on</span>
+</div>
+</label>
+</div>
+</section>
+<!-- Section: Security Settings -->
+<section class="bg-white dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800">
+<h2 class="text-slate-900 dark:text-white text-xl font-bold">Security &amp; Biometric Thresholds</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Fine-tune the sensitivity of entry authentication systems.</p>
+</div>
+<div class="p-6 flex flex-col gap-8">
+<div>
+<div class="flex justify-between items-center mb-4">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Biometric Sensitivity Threshold</span>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">85% Match Required</span>
+</div>
+<input class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-primary" max="100" min="50" type="range" value="85"/>
+<div class="flex justify-between mt-2 text-[10px] text-slate-400 uppercase font-bold tracking-wider">
+<span>Low Security</span>
+<span>High Precision</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<label class="flex flex-col gap-2">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Session Timeout (Minutes)</span>
+<select class="form-select w-full rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-primary focus:ring-primary h-12">
+<option>15 Minutes</option>
+<option selected="">30 Minutes</option>
+<option>60 Minutes</option>
+<option>Indefinite (Not Recommended)</option>
+</select>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-semibold">MFA Enforcement</span>
+<div class="flex items-center h-12 px-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+<input checked="" class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="ml-3 text-slate-600 dark:text-slate-300 text-sm">Require MFA for all admin logins</span>
+</div>
+</label>
+</div>
+</div>
+</section>
+<!-- Section: Notification Preferences -->
+<section class="bg-white dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800">
+<h2 class="text-slate-900 dark:text-white text-xl font-bold">Notification Preferences</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Control when and how you receive security alerts.</p>
+</div>
+<div class="divide-y divide-slate-200 dark:divide-slate-800">
+<div class="p-6 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-slate-900 dark:text-white font-semibold">Email Alerts</span>
+<span class="text-slate-500 dark:text-slate-400 text-sm">Daily summary of all system logs and access events.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="p-6 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-slate-900 dark:text-white font-semibold">SMS Security Alerts</span>
+<span class="text-slate-500 dark:text-slate-400 text-sm">Instant text notification for unauthorized access attempts.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="p-6 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-slate-900 dark:text-white font-semibold">System Health Notifications</span>
+<span class="text-slate-500 dark:text-slate-400 text-sm">Alerts for hardware failures or network connectivity issues.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Footer Actions -->
+<div class="flex items-center justify-end gap-4 pt-4 border-t border-slate-200 dark:border-slate-800 pb-20">
+<button class="px-6 py-3 rounded-lg text-slate-600 dark:text-slate-400 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                        Reset Defaults
+                    </button>
+<button class="px-10 py-3 rounded-lg bg-primary text-white font-bold hover:opacity-90 transition-all shadow-lg shadow-primary/20">
+                        Save Changes
+                    </button>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

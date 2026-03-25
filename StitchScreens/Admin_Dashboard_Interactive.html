@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SecureAccess | Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1132d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Public Sans", sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="flex flex-col min-h-screen">
+<!-- Top Navigation -->
+<header class="border-b border-slate-200 dark:border-primary/20 bg-white dark:bg-background-dark/50 backdrop-blur-md sticky top-0 z-50">
+<div class="max-w-[1440px] mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-xl">shield_lock</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-50">SecureAccess <span class="text-primary">Admin</span></h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-sm font-semibold text-primary" href="#">Dashboard</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Users</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Audit Logs</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Devices</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+<input class="bg-slate-100 dark:bg-slate-800/50 border-none rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-primary ring-inset focus:w-80 transition-all duration-300" placeholder="Search logs, users..." type="text"/>
+</div>
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
+</button>
+<div class="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border border-slate-300 dark:border-primary/30">
+<img alt="Admin user avatar" data-alt="Corporate headshot of a professional administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmRVEBYjLyw0eYPajKSwMRWiqJdeN8U9Tteo890Qpr7JH4n_T6DC0_ZXJJDpHuJRxyLO-pc0VvK48M5UStgnwAlP_IXAUG7KR7O8_9U9NJg9MRYdnyPLcu5yjaxMCv2slx4fsgOpKfStSSxrq1hTpBAiGoW0IEK7c5iVsIfJe0SOcAbYGT0idI9OZPcHh2sR1JMS5XKufSATz78VNIUG486Xpkr5oDsl7-iUoT0cvnvouv9H2_Ko0I6tmEiZhY1wY0a_iyXt-X6Vja"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 max-w-[1440px] mx-auto w-full px-6 py-8 gap-8">
+<!-- Sidebar Navigation -->
+<aside class="w-64 flex-shrink-0 hidden lg:flex flex-col gap-1">
+<p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">Main Menu</p>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-semibold group hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group hover:translate-x-1 transition-all duration-200 hover:text-primary" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">person_add</span>
+<span class="text-sm">Registrations</span>
+<span class="ml-auto bg-primary/20 text-primary text-[10px] px-1.5 py-0.5 rounded font-bold">12</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group hover:translate-x-1 transition-all duration-200 hover:text-primary" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">group</span>
+<span class="text-sm">Active Renters</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group hover:translate-x-1 transition-all duration-200 hover:text-primary" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">history</span>
+<span class="text-sm">Access Logs</span>
+</a>
+<p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-3 mt-8 mb-2">Security</p>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group hover:translate-x-1 transition-all duration-200 hover:text-primary" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">security</span>
+<span class="text-sm">Permissions</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group hover:translate-x-1 transition-all duration-200 hover:text-primary" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">sensors</span>
+<span class="text-sm">System Health</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group hover:translate-x-1 transition-all duration-200 hover:text-primary" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">settings</span>
+<span class="text-sm">Configuration</span>
+</a>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col gap-8 min-w-0">
+<!-- Stats Section -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-primary/10 rounded-xl p-6 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Active Renters</span>
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">group</span>
+</div>
+</div>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-bold">1,284</span>
+<span class="text-emerald-500 text-xs font-bold mb-1 flex items-center">
+<span class="material-symbols-outlined text-xs">arrow_upward</span> 12.5%
+                            </span>
+</div>
+<p class="text-xs text-slate-400 mt-2">Current capacity at 84%</p>
+</div>
+<div class="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-primary/10 rounded-xl p-6 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Access Granted (24h)</span>
+<div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+<span class="material-symbols-outlined">verified</span>
+</div>
+</div>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-bold">3,492</span>
+<span class="text-emerald-500 text-xs font-bold mb-1 flex items-center">
+<span class="material-symbols-outlined text-xs">arrow_upward</span> 4.2%
+                            </span>
+</div>
+<p class="text-xs text-slate-400 mt-2">Peak activity: 08:30 AM</p>
+</div>
+<div class="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-primary/10 rounded-xl p-6 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Security Alerts</span>
+<div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500">
+<span class="material-symbols-outlined">report</span>
+</div>
+</div>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-bold">3</span>
+<span class="text-rose-500 text-xs font-bold mb-1 flex items-center">
+<span class="material-symbols-outlined text-xs">warning</span> High Risk
+                            </span>
+</div>
+<p class="text-xs text-slate-400 mt-2">Failed attempts: 2, Unauthorized: 1</p>
+</div>
+</section>
+<!-- Pending Registrations -->
+<section class="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-primary/10 rounded-xl overflow-hidden shadow-sm">
+<div class="px-6 py-4 border-b border-slate-200 dark:border-primary/10 flex items-center justify-between">
+<div>
+<h3 class="font-bold text-lg">Pending Registrations</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400">Review new access requests for approval</p>
+</div>
+<button class="text-primary text-sm font-bold hover:underline hover:text-primary/80 transition-colors">View All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wider">
+<tr>
+<th class="px-6 py-3 font-semibold">Requester</th>
+<th class="px-6 py-3 font-semibold">Access Level</th>
+<th class="px-6 py-3 font-semibold">Request Date</th>
+<th class="px-6 py-3 font-semibold text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer" onclick="document.getElementById('registration-modal').classList.remove('hidden'); document.getElementById('registration-modal').classList.add('flex')">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">AR</div>
+<div>
+<p class="text-sm font-bold">Alex Rivera</p>
+<p class="text-xs text-slate-500">alex.r@proton.me</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Standard Tenant</span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500">Oct 24, 2023 • 14:22</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary/90 transition-all" onclick="document.getElementById('registration-modal').classList.remove('hidden'); document.getElementById('registration-modal').classList.add('flex')">Approve</button>
+<button class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-bold rounded-lg hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 transition-all" onclick="document.getElementById('registration-modal').classList.remove('hidden'); document.getElementById('registration-modal').classList.add('flex')">Reject</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer" onclick="document.getElementById('registration-modal').classList.remove('hidden'); document.getElementById('registration-modal').classList.add('flex')">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">JS</div>
+<div>
+<p class="text-sm font-bold">Jordan Smith</p>
+<p class="text-xs text-slate-500">j.smith@maintenace.co</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-500/10 text-amber-500">Maintenance</span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500">Oct 24, 2023 • 11:05</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary/90 transition-all" onclick="document.getElementById('registration-modal').classList.remove('hidden'); document.getElementById('registration-modal').classList.add('flex')">Approve</button>
+<button class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-bold rounded-lg hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 transition-all" onclick="document.getElementById('registration-modal').classList.remove('hidden'); document.getElementById('registration-modal').classList.add('flex')">Reject</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer" onclick="document.getElementById('registration-modal').classList.remove('hidden'); document.getElementById('registration-modal').classList.add('flex')">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">CW</div>
+<div>
+<p class="text-sm font-bold">Casey Wong</p>
+<p class="text-xs text-slate-500">caseywong@gmail.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Standard Tenant</span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500">Oct 23, 2023 • 18:45</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary/90 transition-all" onclick="document.getElementById('registration-modal').classList.remove('hidden'); document.getElementById('registration-modal').classList.add('flex')">Approve</button>
+<button class="px-3 py-1.5 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-bold rounded-lg hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 transition-all" onclick="document.getElementById('registration-modal').classList.remove('hidden'); document.getElementById('registration-modal').classList.add('flex')">Reject</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Real-time Logs -->
+<section class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+<!-- Access Logs -->
+<div class="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-primary/10 rounded-xl overflow-hidden shadow-sm flex flex-col">
+<div class="px-6 py-4 border-b border-slate-200 dark:border-primary/10 flex items-center justify-between bg-slate-50 dark:bg-slate-900/60">
+<h3 class="font-bold text-sm">Real-time Access Logs</h3>
+<span class="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full animate-pulse">
+<span class="w-1 h-1 bg-emerald-500 rounded-full"></span> LIVE
+                            </span>
+</div>
+<div class="p-0 flex-1">
+<div class="divide-y divide-slate-100 dark:divide-slate-800">
+<div class="px-6 py-4 flex items-center justify-between text-xs">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-500">login</span>
+<div>
+<span class="font-bold">Main Entrance</span>
+<p class="text-slate-500">Sarah Jenkins (ID: 4502)</p>
+</div>
+</div>
+<span class="text-slate-400">Just now</span>
+</div>
+<div class="px-6 py-4 flex items-center justify-between text-xs">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-rose-500">lock_reset</span>
+<div>
+<span class="font-bold">Server Room B</span>
+<p class="text-slate-500">Unauthorized Attempt - Device #08</p>
+</div>
+</div>
+<span class="text-slate-400">2 min ago</span>
+</div>
+<div class="px-6 py-4 flex items-center justify-between text-xs">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-500">login</span>
+<div>
+<span class="font-bold">Parking Gate G2</span>
+<p class="text-slate-500">Marcus Wright (ID: 1109)</p>
+</div>
+</div>
+<span class="text-slate-400">5 min ago</span>
+</div>
+<div class="px-6 py-4 flex items-center justify-between text-xs">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-500">login</span>
+<div>
+<span class="font-bold">Staff Lounge</span>
+<p class="text-slate-500">Elena Rossi (ID: 3321)</p>
+</div>
+</div>
+<span class="text-slate-400">12 min ago</span>
+</div>
+</div>
+</div>
+</div>
+<!-- System Status Card -->
+<div class="bg-primary/5 border border-primary/20 rounded-xl p-6 shadow-sm flex flex-col">
+<h3 class="font-bold text-sm mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">analytics</span> Security Analytics
+                        </h3>
+<div class="flex-1 flex flex-col justify-center gap-6">
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span>System Load</span>
+<span class="text-primary">24%</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[24%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span>Network Latency</span>
+<span class="text-emerald-500">Optimal (12ms)</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+<div class="bg-emerald-500 h-full w-[15%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span>Active Protocols</span>
+<span class="text-primary">AES-256 Enabled</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-full opacity-50"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 grid grid-cols-2 gap-4">
+<div class="bg-white/50 dark:bg-background-dark/50 p-4 rounded-lg border border-primary/10">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Database Hub</p>
+<p class="text-sm font-bold flex items-center gap-1.5 mt-1">
+<span class="w-2 h-2 bg-emerald-500 rounded-full"></span> Online
+                                </p>
+</div>
+<div class="bg-white/50 dark:bg-background-dark/50 p-4 rounded-lg border border-primary/10">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Cloud Backup</p>
+<p class="text-sm font-bold flex items-center gap-1.5 mt-1">
+<span class="w-2 h-2 bg-emerald-500 rounded-full"></span> Synced
+                                </p>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer -->
+<footer class="max-w-[1440px] mx-auto w-full px-6 py-6 border-t border-slate-200 dark:border-primary/10 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500">
+<p>© 2023 SecureAccess Systems. All rights reserved.</p>
+<div class="flex items-center gap-6 mt-4 md:mt-0">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Compliance Settings</a>
+<a class="hover:text-primary transition-colors" href="#">System Status</a>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">bolt</span> Build v4.2.0</span>
+</div>
+</footer>
+</div>
+<!-- Pending Registration Detail Modal (Hidden by default) -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm" id="registration-modal">
+<div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 dark:border-primary/20 overflow-hidden">
+<div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+<h3 class="text-lg font-bold">Review Access Request</h3>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" onclick="this.closest('#registration-modal').classList.add('hidden')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-primary text-2xl font-bold">AR</div>
+<div>
+<h4 class="text-xl font-bold text-slate-900 dark:text-white">Alex Rivera</h4>
+<p class="text-sm text-slate-500">alex.r@proton.me • ID Verified</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg">
+<p class="text-[10px] uppercase font-bold text-slate-400">Phone</p>
+<p class="text-sm">+1 (555) 012-3456</p>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg">
+<p class="text-[10px] uppercase font-bold text-slate-400">Employment</p>
+<p class="text-sm">Maintenance Lead</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-2 text-sm text-emerald-500 font-medium">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                    Government ID Verified
+                </div>
+<div class="flex items-center gap-2 text-sm text-emerald-500 font-medium">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                    Background Check Cleared
+                </div>
+</div>
+</div>
+<div class="p-6 bg-slate-50 dark:bg-slate-800/30 flex gap-3">
+<button class="flex-1 py-2.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all">Approve Access</button>
+<button class="flex-1 py-2.5 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold rounded-xl hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all">Deny Request</button>
+</div>
+</div>
+</div></body></html>
