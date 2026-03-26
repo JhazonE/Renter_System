@@ -241,11 +241,10 @@ export const Registrations = () => {
         console.log(`Sending PUT request to ${API_URL}/${editId}`);
         const response = await axios.put(`${API_URL}/${editId}`, entryData);
         console.log('Update response data:', JSON.stringify(response.data, null, 2));
-        setData(prev => prev.map(item => Number(item.id) === Number(editId) ? response.data : item));
-        
-        // Specifically for Active Renters view, we might need a separate way to sync, 
-        // but updating the local state should at least work for the current screen.
         console.log('State updated successfully');
+        
+        // Final fallback: re-fetch EVERYTHING to ensure sync
+        await fetchRegistrations();
         
         await createAuditLog({
           admin: userRole,
@@ -259,7 +258,7 @@ export const Registrations = () => {
         console.log(`Sending POST request to ${API_URL}`);
         const response = await axios.post(API_URL, { ...entryData, status: 'Approved' });
         console.log('Create response:', response.data);
-        setData(prev => [response.data, ...prev]);
+        await fetchRegistrations();
 
         // Log registration approval dynamically
         try {
@@ -465,8 +464,8 @@ export const Registrations = () => {
                     />
                     <View style={{ marginLeft: 12 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{item.name || `${item.first_name} ${item.last_name}`}</Text>
-                        {item.hasFingerprint && <IconButton icon="fingerprint" size={14} iconColor={colors.primary} style={{ margin: 0, padding: 0 }} />}
+                        <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>{item.name || `${item.firstName || item.first_name || ''} ${item.lastName || item.last_name || ''}`}</Text>
+                        {(item.hasFingerprint || item.has_fingerprint) && <IconButton icon="fingerprint" size={14} iconColor={colors.primary} style={{ margin: 0, padding: 0 }} />}
                       </View>
                       <Text variant="bodySmall" style={{ color: colors.slate500 }}>{item.email}</Text>
                     </View>

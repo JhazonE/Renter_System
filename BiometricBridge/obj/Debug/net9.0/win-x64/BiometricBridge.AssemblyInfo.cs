@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BiometricBridge")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+60de9c9cda9d2d0ba7688dab0d70f4e70291529a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3c0e2f1aeff762382e125cd4cfcc25733dc61165")]
 [assembly: System.Reflection.AssemblyProductAttribute("BiometricBridge")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BiometricBridge")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
