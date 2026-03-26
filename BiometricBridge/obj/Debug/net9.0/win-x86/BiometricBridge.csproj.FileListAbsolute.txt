@@ -37,3 +37,4 @@ D:\BHAGOH PROJECT\Renter Systems\BiometricBridge\obj\Debug\net9.0\win-x86\refint
 D:\BHAGOH PROJECT\Renter Systems\BiometricBridge\obj\Debug\net9.0\win-x86\BiometricBridge.pdb
 D:\BHAGOH PROJECT\Renter Systems\BiometricBridge\obj\Debug\net9.0\win-x86\BiometricBridge.genruntimeconfig.cache
 D:\BHAGOH PROJECT\Renter Systems\BiometricBridge\obj\Debug\net9.0\win-x86\ref\BiometricBridge.dll
+D:\BHAGOH PROJECT\Renter Systems\biometricbridge\bin\Debug\net9.0\win-x86\libs\printer.sdk.dll

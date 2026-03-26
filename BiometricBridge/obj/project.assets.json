@@ -109,7 +109,7 @@
         ]
       }
     },
-    "net9.0/win-x86": {
+    "net9.0/win-x64": {
       "Microsoft.AspNetCore.OpenApi/9.0.9": {
         "type": "package",
         "dependencies": {
@@ -673,7 +673,7 @@
       }
     },
     "runtimes": {
-      "win-x86": {
+      "win-x64": {
         "#import": []
       }
     }

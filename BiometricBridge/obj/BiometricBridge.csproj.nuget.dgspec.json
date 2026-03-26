@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\BHAGOH PROJECT\\Renter Systems\\biometricbridge\\BiometricBridge.csproj": {}
+    "D:\\BHAGOH PROJECT\\Renter Systems\\BiometricBridge\\BiometricBridge.csproj": {}
   },
   "projects": {
-    "D:\\BHAGOH PROJECT\\Renter Systems\\biometricbridge\\BiometricBridge.csproj": {
+    "D:\\BHAGOH PROJECT\\Renter Systems\\BiometricBridge\\BiometricBridge.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\BHAGOH PROJECT\\Renter Systems\\biometricbridge\\BiometricBridge.csproj",
+        "projectUniqueName": "D:\\BHAGOH PROJECT\\Renter Systems\\BiometricBridge\\BiometricBridge.csproj",
         "projectName": "BiometricBridge",
-        "projectPath": "D:\\BHAGOH PROJECT\\Renter Systems\\biometricbridge\\BiometricBridge.csproj",
+        "projectPath": "D:\\BHAGOH PROJECT\\Renter Systems\\BiometricBridge\\BiometricBridge.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\BHAGOH PROJECT\\Renter Systems\\biometricbridge\\obj\\",
+        "outputPath": "D:\\BHAGOH PROJECT\\Renter Systems\\BiometricBridge\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -83,7 +83,7 @@
         }
       },
       "runtimes": {
-        "win-x86": {
+        "win-x64": {
           "#import": []
         }
       }

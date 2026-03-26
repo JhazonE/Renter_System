@@ -23,8 +23,8 @@ class PostgresRegistrationRepository extends RegistrationRepository {
       `INSERT INTO registrations (
         name, first_name, last_name, email, student_phone, parent_phone, 
         room_no, floor_no, unit, imd, has_fingerprint, biometric_template,
-        status, initials, date, can_generate_meal_ticket
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) 
+        status, initials, date, can_generate_meal_ticket, meal_type
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) 
       RETURNING *`,
       [
         registration.name,
@@ -42,7 +42,8 @@ class PostgresRegistrationRepository extends RegistrationRepository {
         registration.status,
         registration.initials,
         registration.date,
-        registration.canGenerateMealTicket
+        registration.canGenerateMealTicket,
+        registration.mealType
       ]
     );
     return this._mapToEntity(rows[0]);
@@ -97,13 +98,14 @@ class PostgresRegistrationRepository extends RegistrationRepository {
         name = $1, first_name = $2, last_name = $3, email = $4, 
         student_phone = $5, parent_phone = $6, room_no = $7, 
         floor_no = $8, unit = $9, imd = $10, initials = $11,
-        has_fingerprint = $12, biometric_template = $13
-      WHERE id = $14 RETURNING *`,
+        has_fingerprint = $12, biometric_template = $13, meal_type = $14
+      WHERE id = $15 RETURNING *`,
       [
         data.name, data.firstName, data.lastName, data.email,
         data.studentPhone, data.parentPhone, data.roomNo,
         data.floorNo, data.unit, data.imd, data.initials,
         data.hasFingerprint, data.biometricTemplate,
+        data.mealType,
         id
       ]
     );
@@ -131,6 +133,7 @@ class PostgresRegistrationRepository extends RegistrationRepository {
       date: row.date,
       canGenerateMealTicket: row.can_generate_meal_ticket,
       mealTicketExpirationDate: row.meal_ticket_expiration_date,
+      mealType: row.meal_type,
       createdAt: row.created_at
     });
   }

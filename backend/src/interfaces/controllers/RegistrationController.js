@@ -79,7 +79,7 @@ class RegistrationController {
         console.log(`Registration ${id} not found for update`);
         return res.status(404).json({ error: 'Registration not found' });
       }
-      console.log(`Registration ${id} updated successfully`);
+      console.log(`Registration ${id} updated successfully:`, JSON.stringify(registration, null, 2));
       res.json(registration);
     } catch (err) {
       console.error(`Error updating registration ${id}:`, err);

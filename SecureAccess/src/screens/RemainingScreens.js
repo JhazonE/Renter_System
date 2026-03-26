@@ -103,7 +103,8 @@ export const Registrations = () => {
     floorNo: '', 
     imd: '',
     hasFingerprint: false,
-    biometricTemplate: null 
+    biometricTemplate: null,
+    mealType: 'Non-Veggie'
   });
   const { userRole, isAuthenticated } = usePermissions();
   const [isFingerprinting, setIsFingerprinting] = useState(false);
@@ -162,7 +163,8 @@ export const Registrations = () => {
       floorNo: item.floorNo || item.floor_no || '',
       imd: item.imd || '',
       hasFingerprint: item.hasFingerprint || item.has_fingerprint || false,
-      biometricTemplate: item.biometricTemplate || item.biometric_template || null
+      biometricTemplate: item.biometricTemplate || item.biometric_template || null,
+      mealType: item.mealType || item.meal_type || 'Non-Veggie'
     });
     setIsModalVisible(true);
   };
@@ -208,7 +210,8 @@ export const Registrations = () => {
       floorNo: item.floorNo || item.floor_no || '',
       imd: item.imd || '',
       hasFingerprint: item.hasFingerprint || item.has_fingerprint || false,
-      biometricTemplate: item.biometricTemplate || item.biometric_template || null
+      biometricTemplate: item.biometricTemplate || item.biometric_template || null,
+      mealType: item.mealType || item.meal_type || 'Non-Veggie'
     });
     setIsModalVisible(true);
   };
@@ -228,15 +231,21 @@ export const Registrations = () => {
       unit: `Room ${formData.roomNo}`,
       initials: initials.toUpperCase()
     };
-
+    
+    console.log('Final entryData being sent:', JSON.stringify(entryData, null, 2));
     console.log(`Saving registration. isEditing: ${isEditing}, editId: ${editId}`, entryData);
+    console.log('Meal Type:', formData.mealType);
 
     try {
       if (isEditing) {
         console.log(`Sending PUT request to ${API_URL}/${editId}`);
         const response = await axios.put(`${API_URL}/${editId}`, entryData);
-        console.log('Update response:', response.data);
-        setData(prev => prev.map(item => item.id === editId ? response.data : item));
+        console.log('Update response data:', JSON.stringify(response.data, null, 2));
+        setData(prev => prev.map(item => Number(item.id) === Number(editId) ? response.data : item));
+        
+        // Specifically for Active Renters view, we might need a separate way to sync, 
+        // but updating the local state should at least work for the current screen.
+        console.log('State updated successfully');
         
         await createAuditLog({
           admin: userRole,
@@ -298,7 +307,8 @@ export const Registrations = () => {
       floorNo: '', 
       imd: '',
       hasFingerprint: false,
-      biometricTemplate: null 
+      biometricTemplate: null,
+      mealType: 'Non-Veggie'
     });
     setIsEditing(false);
     setIsViewing(false);
@@ -440,8 +450,8 @@ export const Registrations = () => {
           </View>
         ) : viewType === 'table' ? (
           <Table 
-            headers={['Applicant', 'Student Phone', 'Parent Phone', 'Room', 'Floor', 'IMD', 'Date', 'Actions']}
-            columnFlex={[2, 1.6, 1.6, 0.7, 0.7, 0.7, 1.2, 1]}
+            headers={['Applicant', 'Student Phone', 'Room', 'Meal Type', 'IMD', 'Date', 'Actions']}
+            columnFlex={[2, 1.5, 1, 1.2, 1, 1.2, 1]}
             data={filteredData}
             renderRow={(item) => (
               <>
@@ -462,11 +472,20 @@ export const Registrations = () => {
                     </View>
                   </View>
                 </DataTable.Cell>
-                <DataTable.Cell style={{ flex: 1.6 }}><Text variant="bodySmall">{item.studentPhone || item.student_phone || '-'}</Text></DataTable.Cell>
-                <DataTable.Cell style={{ flex: 1.6 }}><Text variant="bodySmall">{item.parentPhone || item.parent_phone || '-'}</Text></DataTable.Cell>
-                <DataTable.Cell style={{ flex: 0.7 }}><Text variant="bodySmall">{item.roomNo || item.room_no || '-'}</Text></DataTable.Cell>
-                <DataTable.Cell style={{ flex: 0.7 }}><Text variant="bodySmall">{item.floorNo || item.floor_no || '-'}</Text></DataTable.Cell>
-                <DataTable.Cell style={{ flex: 0.7 }}><Text variant="bodySmall">{item.imd || '-'}</Text></DataTable.Cell>
+                <DataTable.Cell style={{ flex: 1.5 }}><Text variant="bodySmall">{item.studentPhone || item.student_phone || '-'}</Text></DataTable.Cell>
+                <DataTable.Cell style={{ flex: 1 }}><Text variant="bodySmall">{item.unit || `Room ${item.roomNo}`}</Text></DataTable.Cell>
+                <DataTable.Cell style={{ flex: 1.2 }}>
+                  <Surface style={[
+                    styles.statusBadge, 
+                    item.mealType === 'Veggie' || item.meal_type === 'Veggie' ? { backgroundColor: 'rgba(16, 185, 129, 0.1)' } : { backgroundColor: 'rgba(244, 63, 94, 0.1)' }
+                  ]} elevation={0}>
+                    <Text variant="labelSmall" style={[
+                      styles.statusBadgeText, 
+                      item.mealType === 'Veggie' || item.meal_type === 'Veggie' ? { color: colors.emerald600 } : { color: colors.rose600 }
+                    ]}>{item.mealType || item.meal_type || 'Non-Veggie'}</Text>
+                  </Surface>
+                </DataTable.Cell>
+                <DataTable.Cell style={{ flex: 1 }}><Text variant="bodySmall">{item.imd || '-'}</Text></DataTable.Cell>
 
                 <DataTable.Cell style={{ flex: 1.2 }}><Text variant="bodySmall">{item.date ? new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}</Text></DataTable.Cell>
                 <DataTable.Cell numeric style={{ flex: 1 }}>
@@ -562,6 +581,13 @@ export const Registrations = () => {
                     <View style={styles.detailRow}>
                       <IconButton icon="office-building" size={16} iconColor={colors.slate400} style={{ margin: 0 }} />
                       <Text variant="bodySmall" style={styles.detailText}>Room {item.roomNo || item.room_no || '-'}, Floor {item.floorNo || item.floor_no || '-'}</Text>
+                    </View>
+                    <View style={styles.detailRow}>
+                      <IconButton icon="food-apple" size={16} iconColor={colors.slate400} style={{ margin: 0 }} />
+                      <Text variant="bodySmall" style={[
+                        styles.detailText, 
+                        { color: (item.mealType === 'Veggie' || item.meal_type === 'Veggie') ? colors.emerald600 : colors.rose600, fontWeight: 'bold' }
+                      ]}>{item.mealType || item.meal_type || 'Non-Veggie'}</Text>
                     </View>
                   </View>
                   
@@ -726,17 +752,32 @@ export const Registrations = () => {
                         outlineStyle={{ borderRadius: 12 }}
                       />
                     </View>
-                    <TextInput
-                      label="IMD ID"
-                      value={formData.imd}
-                      onChangeText={(val) => setFormData(prev => ({ ...prev, imd: val }))}
-                      mode="outlined"
-                      style={styles.input}
-                      editable={!isViewing}
-                      left={<TextInput.Icon icon="card-account-details-outline" color={colors.slate400} />}
-                      outlineStyle={{ borderRadius: 12 }}
-                      placeholder="Enter IMD identification number"
-                    />
+                    <View style={styles.inputRow}>
+                      <TextInput
+                        label="IMD ID"
+                        value={formData.imd}
+                        onChangeText={(val) => setFormData(prev => ({ ...prev, imd: val }))}
+                        mode="outlined"
+                        style={[styles.input, { flex: 1 }]}
+                        editable={!isViewing}
+                        left={<TextInput.Icon icon="card-account-details-outline" color={colors.slate400} />}
+                        outlineStyle={{ borderRadius: 12 }}
+                        placeholder="IMD ID"
+                      />
+                      <View style={{ flex: 1, justifyContent: 'center', paddingLeft: 8 }}>
+                        <Text variant="labelSmall" style={{ color: colors.slate500, marginBottom: 4 }}>MEAL TYPE</Text>
+                        <SegmentedButtons
+                          value={formData.mealType}
+                          onValueChange={(val) => setFormData(prev => ({ ...prev, mealType: val }))}
+                          buttons={[
+                            { value: 'Non-Veggie', label: 'Non-Veg', disabled: isViewing },
+                            { value: 'Veggie', label: 'Veggie', disabled: isViewing },
+                          ]}
+                          density="compact"
+                          style={{ scaleX: 0.9, scaleY: 0.9, marginLeft: -10 }}
+                        />
+                      </View>
+                    </View>
                   </View>
 
                   <Surface style={[
@@ -1073,8 +1114,8 @@ export const ActiveRenters = () => {
         ) : viewType === 'table' ? (
           <Card style={styles.tableCard}>
             <Table 
-              headers={['Renter', 'Unit', 'Expires On', 'Date Registered', 'Allow Meal Ticket', 'Actions']}
-              columnFlex={[1.5, 1, 1, 1.4, 1.2, 0.8]}
+              headers={['Renter', 'Unit', 'Meal Type', 'Expires On', 'Allow Meal Ticket', 'Actions']}
+              columnFlex={[1.5, 0.8, 1, 1, 1.2, 0.8]}
               data={filteredData}
               renderRow={(item) => (
                 <>
@@ -1092,11 +1133,22 @@ export const ActiveRenters = () => {
                       </View>
                     </View>
                   </DataTable.Cell>
-                  <DataTable.Cell style={{ flex: 1 }}>
+                  <DataTable.Cell style={{ flex: 0.8 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                       <IconButton icon="office-building" size={14} iconColor={colors.slate400} style={{ margin: 0 }} />
                       <Text variant="bodySmall">{item.unit || `Room ${item.roomNo}`}</Text>
                     </View>
+                  </DataTable.Cell>
+                  <DataTable.Cell style={{ flex: 1 }}>
+                    <Surface style={[
+                      styles.statusBadge, 
+                      item.mealType === 'Veggie' || item.meal_type === 'Veggie' ? { backgroundColor: 'rgba(16, 185, 129, 0.1)' } : { backgroundColor: 'rgba(244, 63, 94, 0.1)' }
+                    ]} elevation={0}>
+                      <Text variant="labelSmall" style={[
+                        styles.statusBadgeText, 
+                        item.mealType === 'Veggie' || item.meal_type === 'Veggie' ? { color: colors.emerald600 } : { color: colors.rose600 }
+                      ]}>{item.mealType || item.meal_type || 'Non-Veggie'}</Text>
+                    </Surface>
                   </DataTable.Cell>
                   <DataTable.Cell style={{ flex: 1 }}>
                     {item.mealTicketExpirationDate ? (
@@ -1109,12 +1161,6 @@ export const ActiveRenters = () => {
                     ) : (
                       <Text variant="bodySmall" style={{ color: colors.slate400, fontStyle: 'italic', paddingLeft: 12 }}>Never</Text>
                     )}
-                  </DataTable.Cell>
-                  <DataTable.Cell style={{ flex: 1.4 }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <IconButton icon="calendar" size={14} iconColor={colors.slate400} style={{ margin: 0 }} />
-                      <Text variant="bodySmall">{item.date ? new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}</Text>
-                    </View>
                   </DataTable.Cell>
                   <DataTable.Cell numeric style={{ flex: 1.2 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, justifyContent: 'flex-end' }}>
@@ -1185,6 +1231,13 @@ export const ActiveRenters = () => {
                     <View style={styles.detailRow}>
                       <IconButton icon="calendar" size={16} iconColor={colors.slate400} style={{ margin: 0 }} />
                       <Text variant="bodySmall" style={styles.detailText}>Registered: {item.date ? new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}</Text>
+                    </View>
+                    <View style={styles.detailRow}>
+                      <IconButton icon="food-apple" size={16} iconColor={colors.slate400} style={{ margin: 0 }} />
+                      <Text variant="bodySmall" style={[
+                        styles.detailText, 
+                        { color: (item.mealType === 'Veggie' || item.meal_type === 'Veggie') ? colors.emerald600 : colors.rose600, fontWeight: 'bold' }
+                      ]}>{item.mealType || item.meal_type || 'Non-Veggie'}</Text>
                     </View>
                     {item.mealTicketExpirationDate && (
                       <View style={styles.detailRow}>
@@ -1328,6 +1381,17 @@ export const ActiveRenters = () => {
                         />
                         <Text variant="bodyMedium" style={{ fontWeight: viewingRenter?.canGenerateMealTicket && isExpired(viewingRenter) ? 'bold' : 'normal', color: viewingRenter?.canGenerateMealTicket && isExpired(viewingRenter) ? colors.amber600 : 'inherit' }}>
                           {viewingRenter?.canGenerateMealTicket ? (isExpired(viewingRenter) ? `Allowed (Expired: ${viewingRenter.mealTicketExpirationDate.split('T')[0]})` : 'Allowed') : 'Restricted'}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={[styles.detailRowLarge, { marginTop: 16 }]}>
+                    <View style={{ flex: 1 }}>
+                      <Text variant="labelSmall" style={styles.detailLabel}>MEAL TYPE</Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <IconButton icon="food-apple" size={16} iconColor={(viewingRenter?.mealType === 'Veggie' || viewingRenter?.meal_type === 'Veggie') ? colors.emerald500 : colors.rose500} style={{ margin: 0 }} />
+                        <Text variant="bodyMedium" style={{ fontWeight: 'bold', color: (viewingRenter?.mealType === 'Veggie' || viewingRenter?.meal_type === 'Veggie') ? colors.emerald600 : colors.rose600 }}>
+                          {viewingRenter?.mealType || viewingRenter?.meal_type || 'Non-Veggie'}
                         </Text>
                       </View>
                     </View>

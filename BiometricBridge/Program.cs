@@ -21,6 +21,7 @@ builder.Services.AddCors(options =>
 
 // Biometric Manager (Singleton)
 builder.Services.AddSingleton<BiometricManager>();
+builder.Services.AddSingleton<PrinterService>();
 
 var app = builder.Build();
 
@@ -32,6 +33,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAll");
+
+app.MapGet("/status", (BiometricManager bio, PrinterService printer) => 
+{
+    return Results.Ok(new { 
+        Biometric = new { bio.IsActive, bio.ReaderCount },
+        Printers = printer.GetAvailablePrinters(),
+        Ports = printer.GetAvailablePorts()
+    });
+});
 
 app.MapGet("/health", (BiometricManager manager) => 
     Results.Ok(new { Status = "Running", HardwareReady = manager.IsActive, ReaderCount = manager.ReaderCount }));
@@ -62,9 +72,34 @@ app.MapPost("/identify", ([FromBody] IdentifyRequest request, BiometricManager m
     }
 });
 
-app.Run("http://localhost:5001");
+app.MapPost("/print", ([FromBody] PrintRequest request, PrinterService printer) =>
+{
+    Console.WriteLine($"[INFO] POST /print received for: {request.RenterName}");
+    try
+    {
+        bool success = printer.PrintMealTicket(request.RenterName, request.MealType, request.Date);
+        if (success)
+        {
+            Console.WriteLine("[INFO] Print job sent successfully.");
+            return Results.Ok(new { status = "SUCCESS" });
+        }
+        else
+        {
+            Console.WriteLine("[ERROR] Printing failed inside PrintMealTicket.");
+            return Results.Problem("Printing failed. Check printer connection.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[ERROR] Exception in /print endpoint: {ex.Message}");
+        return Results.Problem(ex.Message);
+    }
+});
+
+app.Run("http://0.0.0.0:5001");
 
 public record IdentifyRequest(string Probe, List<string> Candidates);
+public record PrintRequest(string RenterName, string MealType, string Date);
 
 // --- Hardware Interface (DPUruNet SDK) ---
 public class BiometricManager

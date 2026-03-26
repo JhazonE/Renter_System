@@ -18,6 +18,7 @@ class Registration {
     canGenerateMealTicket = false,
     mealTicketExpirationDate = null,
     biometricTemplate = null,
+    mealType = 'Non-Veggie',
     createdAt
   }) {
     this.id = id;
@@ -38,6 +39,7 @@ class Registration {
     this.date = date;
     this.canGenerateMealTicket = canGenerateMealTicket;
     this.mealTicketExpirationDate = mealTicketExpirationDate;
+    this.mealType = mealType;
     this.createdAt = createdAt;
   }
 

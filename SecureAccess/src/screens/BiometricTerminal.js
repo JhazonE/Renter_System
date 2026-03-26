@@ -135,6 +135,23 @@ export const BiometricTerminal = ({ onExit, registrationId = null }) => {
     }
   };
 
+  const handlePrintTicket = async (ticket) => {
+    try {
+      console.log('Sending print request to Biometric Bridge...');
+      // Use 127.0.0.1 instead of localhost for better compatibility
+      await axios.post('http://127.0.0.1:5001/print', {
+        renterName: ticket.renterName || 'Renter',
+        mealType: ticket.mealType || mealType,
+        date: new Date(ticket.createdAt || Date.now()).toLocaleString()
+      });
+      console.log('Print request sent successfully');
+    } catch (error) {
+      console.warn('Printing failed:', error.message);
+      // Show error alert for debugging
+      Alert.alert("PRINT ERROR", `Failed to send to printer: ${error.message}`);
+    }
+  };
+
   const handleGenerateMealTicket = async (fmdTemplate) => {
     try {
       setIsGenerating(true);
@@ -146,6 +163,9 @@ export const BiometricTerminal = ({ onExit, registrationId = null }) => {
       });
       setMealTicket(response.data);
       
+      // Trigger POS Printing via Biometric Bridge
+      handlePrintTicket(response.data);
+
       // Add native alert for authorization confirmation
       Alert.alert(
         "MEAL TICKET AUTHORIZED",
@@ -369,6 +389,22 @@ export const BiometricTerminal = ({ onExit, registrationId = null }) => {
                     contentStyle={styles.actionButtonContent}
                   >
                     INITIATE BIOMETRIC SCAN
+                  </Button>
+                  <Button 
+                    mode="outlined" 
+                    onPress={() => handlePrintTicket({ renterName: 'TEST USER', mealType: mealType, createdAt: new Date() })} 
+                    style={[styles.secondaryActionButton, { width: '100%', borderColor: colors.primary, marginBottom: 10 }]}
+                    icon="printer"
+                  >
+                    TEST PRINTER
+                  </Button>
+                  <Button 
+                    mode="outlined" 
+                    onPress={() => handlePrintTicket({ renterName: 'FEED', mealType: 'NONE', createdAt: new Date() })} 
+                    style={[styles.secondaryActionButton, { width: '100%', borderColor: colors.secondary }]}
+                    icon="format-line-spacing"
+                  >
+                    FEED PAPER
                   </Button>
                 </View>
               ) : status === 'SCANNING' ? (
