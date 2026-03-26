@@ -10,12 +10,14 @@ class PostgresMealTicketRepository extends MealTicketRepository {
   async save(mealTicket) {
     const { rows } = await this.db.query(
       `INSERT INTO meal_tickets (
-        registration_id, ticket_number, status, expires_at
-      ) VALUES ($1, $2, $3, $4) 
+        registration_id, ticket_number, meal_type, renter_name, status, expires_at
+      ) VALUES ($1, $2, $3, $4, $5, $6) 
       RETURNING *`,
       [
         mealTicket.registrationId,
         mealTicket.ticketNumber,
+        mealTicket.mealType,
+        mealTicket.renterName,
         mealTicket.status,
         mealTicket.expiresAt
       ]
@@ -51,6 +53,8 @@ class PostgresMealTicketRepository extends MealTicketRepository {
       id: row.id,
       registrationId: row.registration_id,
       ticketNumber: row.ticket_number,
+      mealType: row.meal_type,
+      renterName: row.renter_name,
       status: row.status,
       generatedAt: row.generated_at,
       expiresAt: row.expires_at

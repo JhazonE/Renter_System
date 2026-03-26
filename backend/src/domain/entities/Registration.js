@@ -17,6 +17,7 @@ class Registration {
     date,
     canGenerateMealTicket = false,
     mealTicketExpirationDate = null,
+    biometricTemplate = null,
     createdAt
   }) {
     this.id = id;
@@ -31,6 +32,7 @@ class Registration {
     this.unit = unit;
     this.imd = imd;
     this.hasFingerprint = hasFingerprint;
+    this.biometricTemplate = biometricTemplate;
     this.status = status;
     this.initials = initials;
     this.date = date;

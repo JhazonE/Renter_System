@@ -26,6 +26,7 @@ import { colors } from '../theme/colors';
 import { Table } from '../components/Table';
 import { BiometricTerminal } from './BiometricTerminal';
 import { usePermissions } from '../context/PermissionContext';
+import { BiometricService } from '../utils/biometric';
 import { PERMISSIONS, ROLE_PERMISSIONS, ROLES } from '../utils/permissions';
 
 import { API_BASE_URL } from '../utils/api';
@@ -101,7 +102,8 @@ export const Registrations = () => {
     roomNo: '', 
     floorNo: '', 
     imd: '',
-    hasFingerprint: false 
+    hasFingerprint: false,
+    biometricTemplate: null 
   });
   const { userRole, isAuthenticated } = usePermissions();
   const [isFingerprinting, setIsFingerprinting] = useState(false);
@@ -159,7 +161,8 @@ export const Registrations = () => {
       roomNo: item.roomNo || item.room_no || '',
       floorNo: item.floorNo || item.floor_no || '',
       imd: item.imd || '',
-      hasFingerprint: item.hasFingerprint || item.has_fingerprint || false
+      hasFingerprint: item.hasFingerprint || item.has_fingerprint || false,
+      biometricTemplate: item.biometricTemplate || item.biometric_template || null
     });
     setIsModalVisible(true);
   };
@@ -204,7 +207,8 @@ export const Registrations = () => {
       roomNo: item.roomNo || item.room_no || '',
       floorNo: item.floorNo || item.floor_no || '',
       imd: item.imd || '',
-      hasFingerprint: item.hasFingerprint || item.has_fingerprint || false
+      hasFingerprint: item.hasFingerprint || item.has_fingerprint || false,
+      biometricTemplate: item.biometricTemplate || item.biometric_template || null
     });
     setIsModalVisible(true);
   };
@@ -291,44 +295,68 @@ export const Registrations = () => {
       roomNo: '', 
       floorNo: '', 
       imd: '',
-      hasFingerprint: false 
+      floorNo: '', 
+      imd: '',
+      hasFingerprint: false,
+      biometricTemplate: null 
     });
     setIsEditing(false);
     setIsViewing(false);
     setEditId(null);
   };
 
-  const startFingerprintScan = () => {
+  const startFingerprintScan = async () => {
     setIsFingerprinting(true);
     setFingerprintProgress(0);
     setScanCount(1);
     
-    runScan(1);
+    try {
+      // 1. Check if the Biometric Service is running
+      const isRunning = await BiometricService.isServiceRunning();
+      if (!isRunning) {
+        throw new Error('SYSTEM ERROR: BIOMETRIC SERVICE NOT DETECTED. PLEASE ENSURE DIGITAL PERSONA WEB COMPONENTS ARE INSTALLED AND RUNNING.');
+      }
+
+      // 2. Start visual feedback
+      runScan(1);
+
+      // 3. Trigger real hardware capture via SDK
+      console.log('Initiating SDK enrollment capture...');
+      const captureResult = await BiometricService.capture();
+      
+      if (captureResult.status === 'SUCCESS') {
+        console.log('SDK Enrollment Capture Success');
+        setFingerprintProgress(100);
+        setFormData(prev => ({ 
+          ...prev, 
+          hasFingerprint: true, 
+          biometricTemplate: captureResult.template 
+        }));
+        setScanCount(0);
+        setTimeout(() => setIsFingerprinting(false), 800);
+      }
+    } catch (err) {
+      console.error('Biometric Enrollment Failed:', err);
+      let errorMsg = err.message || 'Capture failed';
+      
+      if (errorMsg.includes('DETECTED') || errorMsg.includes('unreachable') || errorMsg.includes('refused')) {
+        errorMsg = 'BIOMETRIC BRIDGE IS UNREACHABLE. PLEASE ENSURE THE .NET BRIDGE IS RUNNING (dotnet run --project BiometricBridge) OR THE HID WEB SDK IS ACTIVE (VISIT HTTPS://127.0.0.1:52181/GET_CONNECTION).';
+      }
+      
+      Alert.alert('Hardware Error', errorMsg);
+      setIsFingerprinting(false);
+      setScanCount(0);
+    }
   };
 
   const runScan = (currentScan) => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 5;
-      setFingerprintProgress(progress);
-      if (progress >= 100) {
-        clearInterval(interval);
-        
-        if (currentScan < 3) {
-          setTimeout(() => {
-            setFingerprintProgress(0);
-            setScanCount(currentScan + 1);
-            runScan(currentScan + 1);
-          }, 800);
-        } else {
-          setTimeout(() => {
-            setFormData(prev => ({ ...prev, hasFingerprint: true }));
-            setIsFingerprinting(false);
-            setScanCount(0);
-          }, 500);
-        }
-      }
-    }, 80);
+    setScanCount(currentScan);
+    setFingerprintProgress(0);
+    
+    // Progress bar visual only
+    if (isFingerprinting && currentScan < 3) {
+      setTimeout(() => runScan(currentScan + 1), 1000);
+    }
   };
 
   return (
@@ -560,17 +588,13 @@ export const Registrations = () => {
             <Card.Title 
               title={isViewing ? "Registration Details" : isEditing ? "Edit Registration" : "Manual Registration"} 
               subtitle={isViewing ? "View full details for this registration record." : isEditing ? "Update details for this registration record." : "Enter details for a new renter application manually."}
-              right={(props) => {
-                const { pointerEvents, ...rest } = props;
-                return (
-                  <IconButton 
-                    {...rest} 
-                    style={[rest.style, { pointerEvents }]} 
-                    icon="close" 
-                    onPress={() => setIsModalVisible(false)} 
-                  />
-                );
-              }}
+              right={(props) => (
+                <IconButton 
+                  {...props} 
+                  icon="close" 
+                  onPress={() => setIsModalVisible(false)} 
+                />
+              )}
             />
             <ScrollView contentContainerStyle={styles.modalBody}>
               {isFingerprinting ? (
@@ -646,7 +670,7 @@ export const Registrations = () => {
 
                   <View style={styles.formSection}>
                     <View style={styles.sectionHeader}>
-                      <Avatar.Icon size={28} icon="phone-marker" style={{ backgroundColor: colors.indigo50 }} color={colors.primary} />
+                      <Avatar.Icon size={28} icon="phone-outline" style={{ backgroundColor: colors.indigo50 }} color={colors.primary} />
                       <Text variant="titleSmall" style={styles.sectionTitle}>Contact Information</Text>
                     </View>
                     <View style={styles.inputRow}>
@@ -857,6 +881,19 @@ export const ActiveRenters = () => {
       const response = await axios.patch(`${API_URL}/${expirationTargetId}/meal-ticket-expiration`, payload);
       if (response.status === 200) {
         setData(prev => prev.map(item => item.id === expirationTargetId ? { ...item, mealTicketExpirationDate: response.data.mealTicketExpirationDate } : item));
+        
+        // If an expiration date is set, automatically enable meal ticket allowance
+        if (expirationDate) {
+          try {
+            await axios.patch(`${API_BASE_URL}/registrations/${expirationTargetId}/meal-ticket-allowance`, {
+              allowed: true
+            });
+            setData(prev => prev.map(item => item.id === expirationTargetId ? { ...item, canGenerateMealTicket: true } : item));
+          } catch (allowanceErr) {
+            console.error('Error automatically enabling allowance:', allowanceErr);
+          }
+        }
+
         setIsExpirationModalVisible(false);
         
         const renter = data.find(r => r.id === expirationTargetId);
@@ -923,8 +960,8 @@ export const ActiveRenters = () => {
     try {
       const newAllowed = !currentAllowed;
       const renter = data.find(r => r.id === id);
-      const response = await axios.patch(`${API_BASE_URL}/registrations/${id}/allowance`, {
-        canGenerateMealTicket: newAllowed
+      const response = await axios.patch(`${API_BASE_URL}/registrations/${id}/meal-ticket-allowance`, {
+        allowed: newAllowed
       });
       
       if (response.status === 200) {
@@ -952,14 +989,7 @@ export const ActiveRenters = () => {
 
   const handleTerminalDone = () => {
     setIsTerminalVisible(false);
-    // The allowance is consumed in the backend, but we should refresh our local state
-    // Or we can rely on the fact that if they close it, it's done.
-    // Let's just set it to false locally if it was successful.
-    if (selectedRenter) {
-      setData(prev => prev.map(item => 
-        item.id === selectedRenter.id ? { ...item, canGenerateMealTicket: false } : item
-      ));
-    }
+    // User requested not to disable the toggle automatically after terminal use
   };
 
   return (
@@ -1089,13 +1119,12 @@ export const ActiveRenters = () => {
                   <DataTable.Cell numeric style={{ flex: 1.2 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, justifyContent: 'flex-end' }}>
                       <Switch 
-                        value={isExpired(item) ? false : item.canGenerateMealTicket} 
+                        value={item.canGenerateMealTicket} 
                         onValueChange={() => handleToggleAllowance(item.id, item.canGenerateMealTicket)}
                         color={colors.primary}
-                        disabled={isExpired(item)}
                       />
-                      <Text variant="labelSmall" style={{ color: isExpired(item) ? colors.amber600 : (item.canGenerateMealTicket ? colors.primary : colors.slate400), minWidth: 80, textAlign: 'left' }}>
-                        {isExpired(item) ? 'EXPIRED' : (item.canGenerateMealTicket ? 'ALLOWED' : 'RESTRICTED')}
+                      <Text variant="labelSmall" style={{ color: item.canGenerateMealTicket ? (isExpired(item) ? colors.amber600 : colors.primary) : colors.slate400, minWidth: 80, textAlign: 'left' }}>
+                        {item.canGenerateMealTicket ? (isExpired(item) ? 'ALLOWED (EXPIRED)' : 'ALLOWED') : 'RESTRICTED'}
                       </Text>
                     </View>
                   </DataTable.Cell>
@@ -1168,9 +1197,9 @@ export const ActiveRenters = () => {
                   </View>
                                     <View style={styles.cardActions}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                        <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: isExpired(item) ? colors.amber500 : '#10B981', marginRight: 8 }} />
-                        <Text variant="labelSmall" style={{ color: isExpired(item) ? colors.amber600 : '#10B981', fontWeight: 'bold' }}>
-                          {isExpired(item) ? 'MEAL TICKET EXPIRED' : 'ACTIVE ON-SITE'}
+                        <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.canGenerateMealTicket ? (isExpired(item) ? colors.amber500 : '#10B981') : colors.slate300, marginRight: 8 }} />
+                        <Text variant="labelSmall" style={{ color: item.canGenerateMealTicket ? (isExpired(item) ? colors.amber600 : '#10B981') : colors.slate500, fontWeight: 'bold' }}>
+                          {item.canGenerateMealTicket ? (isExpired(item) ? 'ALLOWED (EXPIRED)' : 'ALLOWED') : 'RESTRICTED'}
                         </Text>
                       </View>
                       <IconButton 
@@ -1290,11 +1319,17 @@ export const ActiveRenters = () => {
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text variant="labelSmall" style={styles.detailLabel}>MEAL TICKET</Text>
-                      {viewingRenter && isExpired(viewingRenter) ? (
-                        <Text variant="bodyMedium" style={{ color: colors.amber600, fontWeight: 'bold' }}>Expired after {viewingRenter?.mealTicketExpirationDate ? viewingRenter.mealTicketExpirationDate.split('T')[0] : '-'}</Text>
-                      ) : (
-                        <Text variant="bodyMedium">{viewingRenter?.canGenerateMealTicket ? 'Allowed' : 'Restricted'}</Text>
-                      )}
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <IconButton 
+                          icon={viewingRenter?.canGenerateMealTicket ? "check-circle" : "cancel"} 
+                          size={16} 
+                          iconColor={viewingRenter?.canGenerateMealTicket ? (isExpired(viewingRenter) ? colors.amber500 : colors.emerald500) : colors.slate300} 
+                          style={{ margin: 0 }} 
+                        />
+                        <Text variant="bodyMedium" style={{ fontWeight: viewingRenter?.canGenerateMealTicket && isExpired(viewingRenter) ? 'bold' : 'normal', color: viewingRenter?.canGenerateMealTicket && isExpired(viewingRenter) ? colors.amber600 : 'inherit' }}>
+                          {viewingRenter?.canGenerateMealTicket ? (isExpired(viewingRenter) ? `Allowed (Expired: ${viewingRenter.mealTicketExpirationDate.split('T')[0]})` : 'Allowed') : 'Restricted'}
+                        </Text>
+                      </View>
                     </View>
                   </View>
                 </View>

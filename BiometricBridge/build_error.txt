@@ -1,0 +1,15 @@
+﻿  Determining projects to restore...
+  All projects are up-to-date for restore.
+D:\BHAGOH PROJECT\Renter Systems\biometricbridge\Program.cs(159,28): error CS1929: 'Fmd' does not contain a definition for 'Deserialize' and the best extension method overload 'JsonSerializer.Deserialize(JsonDocument, JsonTypeInfo)' requires a receiver of type 'System.Text.Json.JsonDocument' [D:\BHAGOH PROJECT\Renter Systems\biometricbridge\BiometricBridge.csproj]
+D:\BHAGOH PROJECT\Renter Systems\biometricbridge\Program.cs(170,39): error CS1929: 'Fmd' does not contain a definition for 'Deserialize' and the best extension method overload 'JsonSerializer.Deserialize(JsonDocument, JsonTypeInfo)' requires a receiver of type 'System.Text.Json.JsonDocument' [D:\BHAGOH PROJECT\Renter Systems\biometricbridge\BiometricBridge.csproj]
+
+Build FAILED.
+
+D:\BHAGOH PROJECT\Renter Systems\biometricbridge\Program.cs(159,28): error CS1929: 'Fmd' does not contain a definition for 'Deserialize' and the best extension method overload 'JsonSerializer.Deserialize(JsonDocument, JsonTypeInfo)' requires a receiver of type 'System.Text.Json.JsonDocument' [D:\BHAGOH PROJECT\Renter Systems\biometricbridge\BiometricBridge.csproj]
+D:\BHAGOH PROJECT\Renter Systems\biometricbridge\Program.cs(170,39): error CS1929: 'Fmd' does not contain a definition for 'Deserialize' and the best extension method overload 'JsonSerializer.Deserialize(JsonDocument, JsonTypeInfo)' requires a receiver of type 'System.Text.Json.JsonDocument' [D:\BHAGOH PROJECT\Renter Systems\biometricbridge\BiometricBridge.csproj]
+    0 Warning(s)
+    2 Error(s)
+
+Time Elapsed 00:00:01.59
+
+Workload updates are available. Run `dotnet workload list` for more information.

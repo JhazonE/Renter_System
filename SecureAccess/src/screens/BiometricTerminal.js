@@ -5,7 +5,8 @@ import {
   Animated, 
   Easing, 
   Dimensions, 
-  Platform 
+  Platform,
+  Alert
 } from 'react-native';
 import { 
   Text, 
@@ -15,22 +16,24 @@ import {
   Surface, 
   Avatar, 
   useTheme,
-  ActivityIndicator
+  ActivityIndicator,
+  Divider
 } from 'react-native-paper';
 import axios from 'axios';
 import { colors } from '../theme/colors';
-
-const API_BASE_URL = 'http://localhost:5000/api';
+import { BiometricService } from '../utils/biometric';
+import { API_BASE_URL } from '../utils/api';
 
 const { width, height } = Dimensions.get('window');
 
-export const BiometricTerminal = ({ onExit, registrationId = 1 }) => {
+export const BiometricTerminal = ({ onExit, registrationId = null }) => {
   const [status, setStatus] = useState('IDLE'); // IDLE, SCANNING, SUCCESS, ERROR
   const [progress, setProgress] = useState(0);
   const [scanStep, setScanStep] = useState(0);
   const [mealTicket, setMealTicket] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [terminalError, setTerminalError] = useState(null);
+  const [mealType, setMealType] = useState('Non-Veggie');
   const theme = useTheme();
   
   const scanAnim = useRef(new Animated.Value(0)).current;
@@ -56,11 +59,62 @@ export const BiometricTerminal = ({ onExit, registrationId = 1 }) => {
     ).start();
   }, []);
 
-  const startScan = () => {
+  const startScan = async () => {
     setStatus('SCANNING');
     setProgress(0);
     setScanStep(1);
-    runScanCycle(1);
+    
+    try {
+      // 1. Check if the Biometric Service is running
+      const isRunning = await BiometricService.isServiceRunning();
+      if (!isRunning) {
+        throw new Error('SYSTEM ERROR: BIOMETRIC SERVICE NOT DETECTED. PLEASE ENSURE DIGITAL PERSONA WEB COMPONENTS ARE INSTALLED AND RUNNING.');
+      }
+
+      // 2. Start visual feedback
+      runScanCycle(1);
+
+      // 3. Trigger real hardware capture via SDK
+      console.log('Initiating SDK capture...');
+      const captureResult = await BiometricService.capture();
+      
+      if (captureResult.status === 'SUCCESS') {
+        console.log('SDK Capture Success');
+        setProgress(1);
+        setStatus('SUCCESS');
+        
+        // 4. Send the template to backend
+        const ticketData = await handleGenerateMealTicket(captureResult.template);
+        
+        // Log access attempt using identified details
+        try {
+          await axios.post(`${API_BASE_URL}/access-logs`, {
+            name: ticketData?.renterName || `Renter ID: ${registrationId || 'Unknown'}`,
+            dept: 'Resident',
+            point: 'Biometric Terminal X1',
+            location: 'Main Lobby',
+            type: 'Biometric Scan',
+            status: 'Granted',
+            avatar: null
+          });
+        } catch (err) {
+          console.error('Failed to log biometric access', err);
+        }
+      }
+    } catch (err) {
+      console.error('Biometric Scan Failed:', err);
+      let errorMsg = err.message || 'HARDWARE ERROR: CAPTURE FAILED';
+      
+      // Add specific hints for common connection issues
+      if (errorMsg.includes('DETECTED') || errorMsg.includes('unreachable') || errorMsg.includes('refused')) {
+        errorMsg = 'SYSTEM READY TO SCAN, BUT THE BIOMETRIC BRIDGE IS UNREACHABLE. PLEASE ENSURE THE DIGITAL PERSONA SERVICE IS RUNNING AND SSL IS ACCEPTED.';
+      } else if (errorMsg.includes('0x8000ffff')) {
+        errorMsg = 'HARDWARE INITIALIZATION ERROR (0x8000ffff). PLEASE RE-PLUG THE READER AND RESTART THE SERVICE.';
+      }
+      
+      setTerminalError(errorMsg);
+      setStatus('ERROR');
+    }
   };
 
   const runScanCycle = (step) => {
@@ -75,50 +129,30 @@ export const BiometricTerminal = ({ onExit, registrationId = 1 }) => {
       useNativeDriver: Platform.OS !== 'web',
     }).start();
 
-    let currentProgress = (step - 1) * 33;
-    const interval = setInterval(() => {
-      currentProgress += 1;
-      const targetProgress = step * 33.3;
-      setProgress(Math.min(currentProgress / 100, targetProgress / 100));
-      
-      if (currentProgress >= targetProgress) {
-        clearInterval(interval);
-        if (step < 3) {
-          setTimeout(() => runScanCycle(step + 1), 500);
-        } else {
-          setTimeout(async () => {
-            setProgress(1);
-            setStatus('SUCCESS');
-            await handleGenerateMealTicket();
-            
-            // Log access attempt dynamically
-            try {
-              await axios.post('http://localhost:5000/api/access-logs', {
-                name: `Renter ID: ${registrationId}`,
-                dept: 'Resident',
-                point: 'Biometric Terminal X1',
-                location: 'Main Lobby',
-                type: 'Biometric Scan',
-                status: 'Granted',
-                avatar: null
-              });
-            } catch (err) {
-              console.error('Failed to log biometric access', err);
-            }
-          }, 800);
-        }
-      }
-    }, 40);
+    // Progress bar visual only (real capture is handled by BiometricService)
+    if (status === 'SCANNING' && step < 3) {
+      setTimeout(() => runScanCycle(step + 1), 1000);
+    }
   };
 
-  const handleGenerateMealTicket = async () => {
+  const handleGenerateMealTicket = async (fmdTemplate) => {
     try {
       setIsGenerating(true);
       setTerminalError(null);
       const response = await axios.post(`${API_BASE_URL}/meal-tickets/generate`, {
-        registrationId: registrationId
+        registrationId: registrationId,
+        mealType: mealType,
+        biometricTemplate: fmdTemplate // Passing the real capture template to backend
       });
       setMealTicket(response.data);
+      
+      // Add native alert for authorization confirmation
+      Alert.alert(
+        "MEAL TICKET AUTHORIZED",
+        `Identity Verified. Meal Ticket #${response.data.ticketNumber} has been successfully generated for ${mealType} remark.`,
+        [{ text: "OK" }]
+      );
+      return response.data;
     } catch (error) {
       console.error('Error generating meal ticket:', error);
       const errorMsg = error.response?.data?.error || 'SYSTEM ERROR: GENERATION FAILED';
@@ -179,7 +213,7 @@ export const BiometricTerminal = ({ onExit, registrationId = 1 }) => {
       <View style={[styles.bgGlow, { bottom: -100, right: -100, backgroundColor: 'rgba(16, 185, 129, 0.05)' }]} />
 
       {/* Header Bar */}
-      <Surface style={styles.header} elevation={1}>
+      <Surface style={[styles.header, Platform.OS === 'web' && { boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)' }]} elevation={Platform.OS === 'web' ? 0 : 1}>
         <View style={styles.headerLeft}>
           <Avatar.Icon 
             size={40} 
@@ -208,7 +242,7 @@ export const BiometricTerminal = ({ onExit, registrationId = 1 }) => {
 
       <View style={styles.mainContent}>
         {/* Main Terminal Frame */}
-        <Surface style={styles.terminalFrame} elevation={4}>
+        <Surface style={[styles.terminalFrame, Platform.OS === 'web' && { boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' }]} elevation={Platform.OS === 'web' ? 0 : 4}>
           <View style={styles.contentInner}>
             {/* Scanner Area */}
             <View style={styles.scannerWrapper}>
@@ -265,7 +299,15 @@ export const BiometricTerminal = ({ onExit, registrationId = 1 }) => {
                       <Avatar.Icon size={24} icon="food" style={{ backgroundColor: colors.emerald100 }} color={colors.emerald600} />
                       <Text variant="labelLarge" style={styles.ticketHeaderText}>MEAL TICKET VALID</Text>
                     </View>
+                    {mealTicket.renterName && (
+                      <Text variant="titleMedium" style={{ textAlign: 'center', fontWeight: '900', color: colors.slate800, marginVertical: 4, letterSpacing: 0.5 }}>
+                        {mealTicket.renterName.toUpperCase()}
+                      </Text>
+                    )}
                     <Text variant="headlineSmall" style={styles.ticketNumber}>{mealTicket.ticketNumber}</Text>
+                    <View style={styles.mealTypeBadge}>
+                      <Text variant="labelSmall" style={styles.mealTypeText}>REMARK: {mealTicket.mealType || mealType}</Text>
+                    </View>
                     <View style={styles.ticketFooter}>
                       <Text variant="labelSmall" style={styles.ticketValidity}>EXPIRES: {new Date(mealTicket.expiresAt).toLocaleTimeString()}</Text>
                     </View>
@@ -298,14 +340,37 @@ export const BiometricTerminal = ({ onExit, registrationId = 1 }) => {
             {/* Actions */}
             <View style={styles.actionsContainer}>
               {status === 'IDLE' ? (
-                <Button 
-                  mode="contained" 
-                  onPress={startScan} 
-                  style={styles.primaryActionButton}
-                  contentStyle={styles.actionButtonContent}
-                >
-                  INITIATE BIOMETRIC SCAN
-                </Button>
+                <View style={{ gap: 16 }}>
+                  <View style={styles.mealTypeSelector}>
+                    <Text variant="labelSmall" style={{ color: colors.slate500, fontWeight: '800', marginBottom: 4 }}>SELECT REMARK:</Text>
+                    <View style={{ flexDirection: 'row', gap: 12 }}>
+                      <Button 
+                        mode={mealType === 'Veggie' ? 'contained' : 'outlined'} 
+                        onPress={() => setMealType('Veggie')}
+                        style={[styles.typeButton, mealType === 'Veggie' && { backgroundColor: colors.emerald600 }]}
+                        labelStyle={mealType === 'Veggie' ? { color: 'white' } : { color: colors.emerald600 }}
+                      >
+                        VEGGIE
+                      </Button>
+                      <Button 
+                        mode={mealType === 'Non-Veggie' ? 'contained' : 'outlined'} 
+                        onPress={() => setMealType('Non-Veggie')}
+                        style={[styles.typeButton, mealType === 'Non-Veggie' && { backgroundColor: colors.rose600 }]}
+                        labelStyle={mealType === 'Non-Veggie' ? { color: 'white' } : { color: colors.rose600 }}
+                      >
+                        NON-VEGGIE
+                      </Button>
+                    </View>
+                  </View>
+                  <Button 
+                    mode="contained" 
+                    onPress={startScan} 
+                    style={styles.primaryActionButton}
+                    contentStyle={styles.actionButtonContent}
+                  >
+                    INITIATE BIOMETRIC SCAN
+                  </Button>
+                </View>
               ) : status === 'SCANNING' ? (
                 <Button 
                   mode="contained" 
@@ -317,22 +382,35 @@ export const BiometricTerminal = ({ onExit, registrationId = 1 }) => {
                   SCANNING...
                 </Button>
               ) : (
-                <View style={styles.successActions}>
-                  <Button 
-                    mode="outlined" 
-                    icon="refresh" 
-                    onPress={reset} 
-                    style={styles.secondaryActionButton}
-                  >
-                    RESET
-                  </Button>
-                  <Button 
-                    mode="contained" 
-                    onPress={reset} 
-                    style={[styles.primaryActionButton, { flex: 1, backgroundColor: colors.emerald500 }]}
-                  >
-                    PROCEED
-                  </Button>
+                <View style={{ gap: 12 }}>
+                  {status === 'ERROR' && (
+                    <Surface style={styles.helpBox} elevation={0}>
+                      <Text variant="labelMedium" style={styles.helpTitle}>TROUBLESHOOTING GUIDE:</Text>
+                      <Text variant="labelSmall" style={styles.helpText}>1. ENSURE THE ".NET BIOMETRIC BRIDGE" IS RUNNING (PORT 5001)</Text>
+                      <Text variant="labelSmall" style={styles.helpText}>   👉 RUN: dotnet run --project BiometricBridge</Text>
+                      <Divider style={{ marginVertical: 8 }} />
+                      <Text variant="labelSmall" style={styles.helpText}>2. ALTERNATIVE: ENSURE "DIGITALPERSONA LITE SERVICE" IS RUNNING</Text>
+                      <Text variant="labelSmall" style={[styles.helpText, { color: colors.rose600, fontWeight: '900' }]}>   👉 THEN VISIT THIS LINK TO ACCEPT SSL:</Text>
+                      <Text variant="labelSmall" style={[styles.helpText, { textDecorationLine: 'underline' }]}>   https://127.0.0.1:52181/get_connection</Text>
+                    </Surface>
+                  )}
+                  <View style={styles.successActions}>
+                    <Button 
+                      mode="outlined" 
+                      icon="refresh" 
+                      onPress={reset} 
+                      style={styles.secondaryActionButton}
+                    >
+                      RETRY
+                    </Button>
+                    <Button 
+                      mode="contained" 
+                      onPress={reset} 
+                      style={[styles.primaryActionButton, { flex: 1, backgroundColor: status === 'ERROR' ? colors.slate700 : colors.emerald500 }]}
+                    >
+                      {status === 'ERROR' ? 'BACK TO HOME' : 'PROCEED'}
+                    </Button>
+                  </View>
                 </View>
               )}
             </View>
@@ -555,13 +633,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   ticketHeaderText: {
-    color: colors.emerald700,
+    color: colors.emerald600,
     fontWeight: 'bold',
     letterSpacing: 1,
   },
   ticketNumber: {
     fontFamily: Platform.OS === 'web' ? 'monospace' : undefined,
-    color: colors.emerald900,
+    color: colors.emerald600,
     fontWeight: '900',
     letterSpacing: 2,
   },
@@ -571,5 +649,46 @@ const styles = StyleSheet.create({
   ticketValidity: {
     color: colors.emerald600,
     fontWeight: '600',
+  },
+  mealTypeSelector: {
+    flexDirection: 'column',
+    marginBottom: 4,
+  },
+  typeButton: {
+    flex: 1,
+    borderRadius: 12,
+  },
+  mealTypeBadge: {
+    marginTop: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 2,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
+  },
+  mealTypeText: {
+    fontWeight: '900',
+    letterSpacing: 1,
+    color: colors.slate700,
+  },
+  helpBox: {
+    backgroundColor: colors.slate50,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.slate200,
+    marginBottom: 8,
+  },
+  helpTitle: {
+    color: colors.slate800,
+    fontWeight: '900',
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+  helpText: {
+    color: colors.slate600,
+    fontWeight: '600',
+    marginBottom: 4,
   },
 });

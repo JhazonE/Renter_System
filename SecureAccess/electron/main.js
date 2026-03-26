@@ -52,8 +52,23 @@ function createTerminalWindow() {
 }
 
 app.on('ready', () => {
-  createAdminWindow();
-  createTerminalWindow();
+  const args = process.argv;
+  const showAdmin = args.includes('--admin');
+  const showTerminal = args.includes('--terminal');
+
+  if (showAdmin) {
+    createAdminWindow();
+  }
+  
+  if (showTerminal) {
+    createTerminalWindow();
+  }
+
+  // Default: Open both if no flags provided
+  if (!showAdmin && !showTerminal) {
+    createAdminWindow();
+    createTerminalWindow();
+  }
 
   Menu.setApplicationMenu(null);
 
@@ -80,6 +95,17 @@ app.on('ready', () => {
     const win = BrowserWindow.fromWebContents(webContents);
     if (win) win.close();
   });
+});
+
+// Handle SSL certificate errors for the biometric bridge (localhost)
+app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
+  if (url.startsWith('https://127.0.0.1') || url.startsWith('https://localhost')) {
+    // IMPORTANT: Only do this for localhost to maintain security
+    event.preventDefault();
+    callback(true);
+  } else {
+    callback(false);
+  }
 });
 
 app.on('window-all-closed', () => {

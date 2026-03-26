@@ -349,10 +349,7 @@ export const UserManagement = () => {
             <Card.Title 
               title={isEditing ? 'Edit User' : 'Add New User'} 
               subtitle={isEditing ? 'Update existing user account details.' : 'Create a new system account.'}
-              right={(props) => {
-                const { pointerEvents, ...rest } = props;
-                return <IconButton {...rest} style={[rest.style, { pointerEvents }]} icon="close" onPress={closeModal} />;
-              }}
+              right={(props) => <IconButton {...props} icon="close" onPress={closeModal} />}
             />
             <ScrollView contentContainerStyle={styles.modalBody}>
               <TextInput

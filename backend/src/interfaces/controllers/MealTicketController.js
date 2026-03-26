@@ -5,15 +5,20 @@ class MealTicketController {
   }
 
   async generate(req, res) {
-    const { registrationId } = req.body;
-    if (!registrationId) {
-      return res.status(400).json({ error: 'registrationId is required' });
+    const { registrationId, mealType, biometricTemplate } = req.body;
+    if (!registrationId && !biometricTemplate) {
+      return res.status(400).json({ error: 'Either registrationId or biometricTemplate is required' });
     }
     try {
-      const mealTicket = await this.generateMealTicket.execute(registrationId);
+      console.log(`[MealTicketController] Generating ticket. RID: ${registrationId}, Type: ${mealType}`);
+      const mealTicket = await this.generateMealTicket.execute(registrationId, mealType, biometricTemplate);
+      console.log(`[MealTicketController] Ticket generated: ${mealTicket.ticketNumber}`);
       res.status(201).json(mealTicket);
     } catch (err) {
       console.error(err);
+      if (err.message.includes('not authorized') || err.message.includes('not found')) {
+        return res.status(403).json({ error: err.message });
+      }
       res.status(500).json({ error: err.message || 'Database error' });
     }
   }

@@ -12,10 +12,12 @@ CREATE TABLE IF NOT EXISTS registrations (
     unit VARCHAR(100),
     imd VARCHAR(100),
     has_fingerprint BOOLEAN DEFAULT FALSE,
+    biometric_template TEXT,
     status VARCHAR(20) DEFAULT 'Pending',
     initials VARCHAR(10),
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     can_generate_meal_ticket BOOLEAN DEFAULT FALSE,
+    meal_ticket_expiration_date DATE,
     meal_ticket_suspend_start DATE,
     meal_ticket_suspend_end DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -39,6 +41,7 @@ CREATE TABLE IF NOT EXISTS meal_tickets (
     id SERIAL PRIMARY KEY,
     registration_id INTEGER REFERENCES registrations(id),
     ticket_number VARCHAR(50) UNIQUE NOT NULL,
+    meal_type VARCHAR(50),
     status VARCHAR(20) DEFAULT 'Active',
     generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expires_at TIMESTAMP

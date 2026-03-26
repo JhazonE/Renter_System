@@ -9,6 +9,7 @@ class SetMealTicketExpiration {
       throw new Error('Registration not found');
     }
 
+    await this.registrationRepository.updateMealTicketAllowance(id, true);
     return await this.registrationRepository.updateMealTicketExpiration(id, expirationDate);
   }
 }

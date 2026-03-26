@@ -3,6 +3,8 @@ class MealTicket {
     id,
     registrationId,
     ticketNumber,
+    mealType,
+    renterName,
     status = 'Active',
     generatedAt,
     expiresAt
@@ -10,6 +12,8 @@ class MealTicket {
     this.id = id;
     this.registrationId = registrationId;
     this.ticketNumber = ticketNumber;
+    this.mealType = mealType;
+    this.renterName = renterName;
     this.status = status;
     this.generatedAt = generatedAt;
     this.expiresAt = expiresAt;

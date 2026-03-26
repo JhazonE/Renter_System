@@ -22,9 +22,9 @@ class PostgresRegistrationRepository extends RegistrationRepository {
     const { rows } = await this.db.query(
       `INSERT INTO registrations (
         name, first_name, last_name, email, student_phone, parent_phone, 
-        room_no, floor_no, unit, imd, has_fingerprint, status, initials, date,
-        can_generate_meal_ticket
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) 
+        room_no, floor_no, unit, imd, has_fingerprint, biometric_template,
+        status, initials, date, can_generate_meal_ticket
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) 
       RETURNING *`,
       [
         registration.name,
@@ -38,6 +38,7 @@ class PostgresRegistrationRepository extends RegistrationRepository {
         registration.unit,
         registration.imd,
         registration.hasFingerprint,
+        registration.biometricTemplate,
         registration.status,
         registration.initials,
         registration.date,
@@ -95,12 +96,14 @@ class PostgresRegistrationRepository extends RegistrationRepository {
       `UPDATE registrations SET 
         name = $1, first_name = $2, last_name = $3, email = $4, 
         student_phone = $5, parent_phone = $6, room_no = $7, 
-        floor_no = $8, unit = $9, imd = $10, initials = $11
-      WHERE id = $12 RETURNING *`,
+        floor_no = $8, unit = $9, imd = $10, initials = $11,
+        has_fingerprint = $12, biometric_template = $13
+      WHERE id = $14 RETURNING *`,
       [
         data.name, data.firstName, data.lastName, data.email,
         data.studentPhone, data.parentPhone, data.roomNo,
         data.floorNo, data.unit, data.imd, data.initials,
+        data.hasFingerprint, data.biometricTemplate,
         id
       ]
     );
@@ -122,6 +125,7 @@ class PostgresRegistrationRepository extends RegistrationRepository {
       unit: row.unit,
       imd: row.imd,
       hasFingerprint: row.has_fingerprint,
+      biometricTemplate: row.biometric_template,
       status: row.status,
       initials: row.initials,
       date: row.date,
