@@ -758,3 +758,115 @@
 [2026-05-27T01:46:57.998Z] ERROR: {}
 [2026-05-27T01:47:02.441Z] INFO: [DEBUG] Login attempt for user: admin
 [2026-05-27T01:47:02.517Z] INFO: [DEBUG] Password valid: true
+[2026-05-27T02:11:48.562Z] INFO: [DEBUG] Login attempt for user: admin
+[2026-05-27T02:11:48.663Z] INFO: [DEBUG] Password valid: false
+[2026-05-27T02:11:48.664Z] ERROR: {}
+[2026-05-27T02:11:52.043Z] INFO: [DEBUG] Login attempt for user: admin
+[2026-05-27T02:11:52.139Z] INFO: [DEBUG] Password valid: true
+[2026-05-27T02:12:11.081Z] INFO: [MealTicketController] Generating ticket. RID: null, Type: null
+[2026-05-27T02:12:11.082Z] INFO: [GenerateMealTicket] Attempting identification...
+[2026-05-27T02:12:11.083Z] INFO: [GenerateMealTicket] Sending 2 candidates to Bridge.
+[2026-05-27T02:12:11.083Z] INFO: [GenerateMealTicket] Calling Bridge at: http://127.0.0.1:5003/identify
+[2026-05-27T02:12:11.089Z] INFO: [GenerateMealTicket] Bridge Response: status=SUCCESS, matchedIndex=1
+[2026-05-27T02:12:11.090Z] INFO: [GenerateMealTicket] IDENTIFIED_SUCCESS: jhazon enanoria (ID: 1)
+[2026-05-27T02:12:11.090Z] INFO: [GenerateMealTicket] Checking authorization for RID 1. canGenerateMealTicket: true
+[2026-05-27T02:12:11.095Z] INFO: [GenerateMealTicket] Generating ticket number for RID 1...
+[2026-05-27T02:12:11.096Z] INFO: [GenerateMealTicket] Saving ticket MT-20260527-4PB0 for RID 1...
+[2026-05-27T02:12:11.116Z] INFO: [GenerateMealTicket] Ticket MT-20260527-4PB0 saved successfully.
+[2026-05-27T02:12:11.116Z] INFO: [MealTicketController] Ticket generated: MT-20260527-4PB0
+[2026-05-27T02:12:11.142Z] INFO: [CreateAccessLog] Sending WhatsApp to parent (639381583922): Hello!  jhazon enanoria has successfully generate a meal ticket for their Veggie meal at 10:12:11 AM. Thank you!
+[2026-05-27T02:12:11.878Z] INFO: [WhatsAppService] Message sent via Wassenger to 639381583922. ID: 6a1652faebc068e9290a6adf
+[2026-05-27T02:12:11.879Z] INFO: [CreateAccessLog] Sending WhatsApp to student (639381583922): Hello!  jhazon enanoria has successfully generate a meal ticket for their Veggie meal at 10:12:11 AM. Thank you!
+[2026-05-27T02:12:12.178Z] INFO: [WhatsAppService] Message sent via Wassenger to 639381583922. ID: 6a1652fbdeda5af0a09fbc89
+[2026-05-27T02:12:31.661Z] INFO: [MealTicketController] Generating ticket. RID: null, Type: null
+[2026-05-27T02:12:31.661Z] INFO: [GenerateMealTicket] Attempting identification...
+[2026-05-27T02:12:31.712Z] INFO: [GenerateMealTicket] Sending 2 candidates to Bridge.
+[2026-05-27T02:12:31.712Z] INFO: [GenerateMealTicket] Calling Bridge at: http://127.0.0.1:5003/identify
+[2026-05-27T02:12:31.716Z] INFO: [GenerateMealTicket] Bridge Response: status=SUCCESS, matchedIndex=1
+[2026-05-27T02:12:31.716Z] INFO: [GenerateMealTicket] IDENTIFIED_SUCCESS: jhazon enanoria (ID: 1)
+[2026-05-27T02:12:31.716Z] INFO: [GenerateMealTicket] Checking authorization for RID 1. canGenerateMealTicket: true
+[2026-05-27T02:12:31.722Z] INFO: [GenerateMealTicket] Generating ticket number for RID 1...
+[2026-05-27T02:12:31.722Z] INFO: [GenerateMealTicket] Saving ticket MT-20260527-8SE7 for RID 1...
+[2026-05-27T02:12:31.725Z] INFO: [GenerateMealTicket] Ticket MT-20260527-8SE7 saved successfully.
+[2026-05-27T02:12:31.726Z] INFO: [MealTicketController] Ticket generated: MT-20260527-8SE7
+[2026-05-27T02:12:31.739Z] INFO: [CreateAccessLog] Sending WhatsApp to parent (639381583922): Hello!  jhazon enanoria has successfully generate a meal ticket for their Veggie meal at 10:12:31 AM. Thank you!
+[2026-05-27T02:12:32.179Z] INFO: [WhatsAppService] Message sent via Wassenger to 639381583922. ID: 6a16530fdeda5af0a09fc47c
+[2026-05-27T02:12:32.179Z] INFO: [CreateAccessLog] Sending WhatsApp to student (639381583922): Hello!  jhazon enanoria has successfully generate a meal ticket for their Veggie meal at 10:12:31 AM. Thank you!
+[2026-05-27T02:12:32.928Z] INFO: [WhatsAppService] Message sent via Wassenger to 639381583922. ID: 6a16530fc43acd1d79bc7727
+[2026-05-27T02:12:57.182Z] INFO: [dotenv@17.3.1] injecting env (0) from .env [2m-- tip: ⚙️  write to custom object with { processEnv: myObject }[0m
+[2026-05-27T02:12:57.535Z] INFO: [2026-05-27T02:12:57.535Z] DB Connection SUCCESS: Database is reachable.
+[2026-05-27T02:12:57.542Z] INFO: [2026-05-27T02:12:57.542Z] Server running on port 5005 with Clean Architecture
+[2026-05-27T02:13:30.916Z] INFO: [MealTicketController] Generating ticket. RID: null, Type: null
+[2026-05-27T02:13:30.917Z] INFO: [GenerateMealTicket] Attempting identification...
+[2026-05-27T02:13:30.964Z] INFO: [GenerateMealTicket] Sending 2 candidates to Bridge.
+[2026-05-27T02:13:30.964Z] INFO: [GenerateMealTicket] Calling Bridge at: http://127.0.0.1:5003/identify
+[2026-05-27T02:13:30.977Z] INFO: [GenerateMealTicket] Bridge Response: status=SUCCESS, matchedIndex=1
+[2026-05-27T02:13:30.978Z] INFO: [GenerateMealTicket] IDENTIFIED_SUCCESS: jhazon enanoria (ID: 1)
+[2026-05-27T02:13:30.978Z] INFO: [GenerateMealTicket] Checking authorization for RID 1. canGenerateMealTicket: true
+[2026-05-27T02:13:30.983Z] INFO: [GenerateMealTicket] Generating ticket number for RID 1...
+[2026-05-27T02:13:30.983Z] INFO: [GenerateMealTicket] Saving ticket MT-20260527-JL7B for RID 1...
+[2026-05-27T02:13:30.989Z] INFO: [GenerateMealTicket] Ticket MT-20260527-JL7B saved successfully.
+[2026-05-27T02:13:30.989Z] INFO: [MealTicketController] Ticket generated: MT-20260527-JL7B
+[2026-05-27T02:13:31.054Z] INFO: [CreateAccessLog] Sending WhatsApp to parent (639381583922): Hello!  jhazon enanoria has successfully generate a meal ticket for their Veggie meal at 10:13:31 AM. Thank you!
+[2026-05-27T02:13:31.559Z] INFO: [WhatsAppService] Message sent via Wassenger to 639381583922. ID: 6a16534a7813ae49f3edd389
+[2026-05-27T02:13:31.559Z] INFO: [CreateAccessLog] Sending WhatsApp to student (639381583922): Hello!  jhazon enanoria has successfully generate a meal ticket for their Veggie meal at 10:13:31 AM. Thank you!
+[2026-05-27T02:13:31.847Z] INFO: [WhatsAppService] Message sent via Wassenger to 639381583922. ID: 6a16534aec006252389163f1
+[2026-05-27T02:14:42.534Z] INFO: [DEBUG] Login attempt for user: admin
+[2026-05-27T02:14:42.624Z] INFO: [DEBUG] Password valid: false
+[2026-05-27T02:14:42.625Z] ERROR: {}
+[2026-05-27T02:14:45.589Z] INFO: [DEBUG] Login attempt for user: admin
+[2026-05-27T02:14:45.671Z] INFO: [DEBUG] Password valid: true
+[2026-05-27T02:15:34.104Z] INFO: [SystemController] Updating setting: meal_restriction_enabled = true
+[2026-05-27T02:15:34.105Z] INFO: [PostgresSystemSettingsRepository] Setting meal_restriction_enabled to true
+[2026-05-27T02:15:34.180Z] INFO: [PostgresSystemSettingsRepository] Successfully updated meal_restriction_enabled
+[2026-05-27T02:15:34.181Z] INFO: [SystemController] Setting updated successfully
+[2026-05-27T02:15:34.188Z] INFO: [SystemController] Updating setting: meal_window_breakfast = 5:00 AM-10:00 AM
+[2026-05-27T02:15:34.188Z] INFO: [PostgresSystemSettingsRepository] Setting meal_window_breakfast to 5:00 AM-10:00 AM
+[2026-05-27T02:15:34.191Z] INFO: [PostgresSystemSettingsRepository] Successfully updated meal_window_breakfast
+[2026-05-27T02:15:34.191Z] INFO: [SystemController] Setting updated successfully
+[2026-05-27T02:15:34.199Z] INFO: [SystemController] Updating setting: meal_window_lunch = 11:00 AM-2:00 PM
+[2026-05-27T02:15:34.199Z] INFO: [PostgresSystemSettingsRepository] Setting meal_window_lunch to 11:00 AM-2:00 PM
+[2026-05-27T02:15:34.203Z] INFO: [PostgresSystemSettingsRepository] Successfully updated meal_window_lunch
+[2026-05-27T02:15:34.204Z] INFO: [SystemController] Setting updated successfully
+[2026-05-27T02:15:34.208Z] INFO: [SystemController] Updating setting: meal_window_dinner = 5:00 PM-9:00 PM
+[2026-05-27T02:15:34.208Z] INFO: [PostgresSystemSettingsRepository] Setting meal_window_dinner to 5:00 PM-9:00 PM
+[2026-05-27T02:15:34.210Z] INFO: [PostgresSystemSettingsRepository] Successfully updated meal_window_dinner
+[2026-05-27T02:15:34.210Z] INFO: [SystemController] Setting updated successfully
+[2026-05-27T02:15:40.271Z] INFO: [MealTicketController] Generating ticket. RID: null, Type: null
+[2026-05-27T02:15:40.272Z] INFO: [GenerateMealTicket] Attempting identification...
+[2026-05-27T02:15:40.274Z] INFO: [GenerateMealTicket] Sending 2 candidates to Bridge.
+[2026-05-27T02:15:40.274Z] INFO: [GenerateMealTicket] Calling Bridge at: http://127.0.0.1:5003/identify
+[2026-05-27T02:15:40.281Z] INFO: [GenerateMealTicket] Bridge Response: status=SUCCESS, matchedIndex=1
+[2026-05-27T02:15:40.281Z] INFO: [GenerateMealTicket] IDENTIFIED_SUCCESS: jhazon enanoria (ID: 1)
+[2026-05-27T02:15:40.281Z] INFO: [GenerateMealTicket] Checking authorization for RID 1. canGenerateMealTicket: true
+[2026-05-27T02:15:40.286Z] INFO: [GenerateMealTicket] Generating ticket number for RID 1...
+[2026-05-27T02:15:40.286Z] INFO: [GenerateMealTicket] Saving ticket MT-20260527-IOV7 for RID 1...
+[2026-05-27T02:15:40.335Z] INFO: [GenerateMealTicket] Ticket MT-20260527-IOV7 saved successfully.
+[2026-05-27T02:15:40.336Z] INFO: [MealTicketController] Ticket generated: MT-20260527-IOV7
+[2026-05-27T02:15:40.376Z] INFO: [CreateAccessLog] Sending WhatsApp to parent (639381583922): Hello!  jhazon enanoria has successfully generate a meal ticket for their Veggie meal at 10:15:40 AM. Thank you!
+[2026-05-27T02:15:40.823Z] INFO: [WhatsAppService] Message sent via Wassenger to 639381583922. ID: 6a1653cbc43acd1d79bcb151
+[2026-05-27T02:15:40.823Z] INFO: [CreateAccessLog] Sending WhatsApp to student (639381583922): Hello!  jhazon enanoria has successfully generate a meal ticket for their Veggie meal at 10:15:40 AM. Thank you!
+[2026-05-27T02:15:41.116Z] INFO: [WhatsAppService] Message sent via Wassenger to 639381583922. ID: 6a1653ccebc068e9290aa6dc
+[2026-05-27T02:22:38.250Z] INFO: [dotenv@17.3.1] injecting env (0) from .env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+[2026-05-27T02:22:38.533Z] INFO: [2026-05-27T02:22:38.533Z] DB Connection SUCCESS: Database is reachable.
+[2026-05-27T02:22:38.536Z] INFO: [2026-05-27T02:22:38.536Z] Server running on port 5005 with Clean Architecture
+[2026-05-27T02:23:28.874Z] INFO: [MealTicketController] Generating ticket. RID: null, Type: null
+[2026-05-27T02:23:28.874Z] INFO: [GenerateMealTicket] Attempting identification...
+[2026-05-27T02:23:28.923Z] INFO: [GenerateMealTicket] Sending 2 candidates to Bridge.
+[2026-05-27T02:23:28.923Z] INFO: [GenerateMealTicket] Calling Bridge at: http://127.0.0.1:5003/identify
+[2026-05-27T02:23:28.935Z] INFO: [GenerateMealTicket] Bridge Response: status=SUCCESS, matchedIndex=1
+[2026-05-27T02:23:28.935Z] INFO: [GenerateMealTicket] IDENTIFIED_SUCCESS: jhazon enanoria (ID: 1)
+[2026-05-27T02:23:28.935Z] INFO: [GenerateMealTicket] Checking authorization for RID 1. canGenerateMealTicket: true
+[2026-05-27T02:23:28.943Z] INFO: [GenerateMealTicket] RID 1 already claimed Breakfast today
+[2026-05-27T02:23:28.943Z] ERROR: [MealTicketController] Error caught: {}
+[2026-05-27T02:23:28.944Z] INFO: [MealTicketController] Sending 409 with error: "Breakfast meal already claimed today. Only one Breakfast ticket is allowed per student."
+[2026-05-27T02:23:56.406Z] INFO: [MealTicketController] Generating ticket. RID: null, Type: null
+[2026-05-27T02:23:56.406Z] INFO: [GenerateMealTicket] Attempting identification...
+[2026-05-27T02:23:56.464Z] INFO: [GenerateMealTicket] Sending 2 candidates to Bridge.
+[2026-05-27T02:23:56.465Z] INFO: [GenerateMealTicket] Calling Bridge at: http://127.0.0.1:5003/identify
+[2026-05-27T02:23:56.471Z] INFO: [GenerateMealTicket] Bridge Response: status=SUCCESS, matchedIndex=1
+[2026-05-27T02:23:56.472Z] INFO: [GenerateMealTicket] IDENTIFIED_SUCCESS: jhazon enanoria (ID: 1)
+[2026-05-27T02:23:56.472Z] INFO: [GenerateMealTicket] Checking authorization for RID 1. canGenerateMealTicket: true
+[2026-05-27T02:23:56.478Z] INFO: [GenerateMealTicket] RID 1 already claimed Breakfast today
+[2026-05-27T02:23:56.478Z] ERROR: [MealTicketController] Error caught: {}
+[2026-05-27T02:23:56.479Z] INFO: [MealTicketController] Sending 409 with error: "Breakfast meal already claimed today. Only one Breakfast ticket is allowed per student."

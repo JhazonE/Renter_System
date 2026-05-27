@@ -1,6 +1,6 @@
 const axios = require('axios');
 const MealTicket = require('../../domain/entities/MealTicket');
-const { loadWindows, getMealPeriod, getPeriodBounds, toLocalNaive } = require('../../shared/mealPeriods');
+const { loadWindows, getNearestMealPeriod, toLocalNaive } = require('../../shared/mealPeriods');
 
 class GenerateMealTicket {
   constructor(mealTicketRepository, registrationRepository, systemSettingsRepository) {
@@ -101,29 +101,43 @@ class GenerateMealTicket {
       }
     }
 
-    // 2.2 Enforce 1 meal per period (Breakfast / Lunch / Dinner) when enabled
+    // 2.2 Enforce 1 meal per period (Breakfast / Lunch / Dinner) when enabled.
     let mealPeriod = null;
     if (this.systemSettingsRepository) {
       const restrictionEnabled = await this.systemSettingsRepository.get('meal_restriction_enabled');
       if (restrictionEnabled === 'true') {
         const windows = await loadWindows(this.systemSettingsRepository);
         const now = new Date();
-        mealPeriod = getMealPeriod(now, windows);
+        // Use the NEAREST period, never null. The strict getMealPeriod() returns
+        // null in the gaps between windows (e.g. 10:00-11:00 AM), which used to
+        // bypass the limit entirely and let a student re-claim. getNearestMealPeriod
+        // attributes every scan -- in-window or off-hours -- to one of the three
+        // meal services so the limit always applies.
+        mealPeriod = getNearestMealPeriod(now, windows);
 
-        if (mealPeriod) {
-          const bounds = getPeriodBounds(now, mealPeriod, windows);
-          // Compare in local wall-clock: generated_at is TIMESTAMP WITHOUT TIME ZONE
-          // (local), and Postgres treats an ISO "Z" bound as naive, so UTC bounds
-          // would be offset by the timezone. See toLocalNaive() for details.
-          const existing = await this.mealTicketRepository.getByRegistrationInRange(
-            registrationId,
-            toLocalNaive(bounds.start),
-            toLocalNaive(bounds.end)
-          );
-          if (existing && existing.length > 0) {
-            log(`[GenerateMealTicket] RID ${registrationId} already claimed ${mealPeriod} today`);
-            throw new Error(`${mealPeriod} meal already claimed today. Only one ${mealPeriod} ticket is allowed per student.`);
-          }
+        // Count this student's tickets across the WHOLE local day, then bucket
+        // each one by its own nearest period. A whole-day scan is required (not
+        // just the period's window bounds) because a gap-generated ticket lands
+        // outside any window and would otherwise escape the per-period count.
+        // Local wall-clock bounds: generated_at is TIMESTAMP WITHOUT TIME ZONE and
+        // Postgres treats an ISO "Z" bound as naive. See toLocalNaive() for details.
+        const dayStart = new Date(now);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(dayStart);
+        dayEnd.setDate(dayEnd.getDate() + 1);
+
+        const todaysTickets = await this.mealTicketRepository.getByRegistrationInRange(
+          registrationId,
+          toLocalNaive(dayStart),
+          toLocalNaive(dayEnd)
+        );
+        const alreadyForPeriod = (todaysTickets || []).some(t => {
+          const genAt = new Date(t.generatedAt);
+          return !isNaN(genAt.getTime()) && getNearestMealPeriod(genAt, windows) === mealPeriod;
+        });
+        if (alreadyForPeriod) {
+          log(`[GenerateMealTicket] RID ${registrationId} already claimed ${mealPeriod} today`);
+          throw new Error(`${mealPeriod} meal already claimed today. Only one ${mealPeriod} ticket is allowed per student.`);
         }
       }
     }
