@@ -27,7 +27,10 @@ class EmailService {
 
   _require() {
     if (!this.enabled) {
-      const err = new Error('Email is not configured. Set SMTP_HOST, SMTP_USER and SMTP_PASS.');
+      const host = process.env.SMTP_HOST || '(unset)';
+      const user = process.env.SMTP_USER || '(unset)';
+      const pass = process.env.SMTP_PASS ? '(set)' : '(unset)';
+      const err = new Error(`Email not configured. SMTP_HOST=${host} SMTP_USER=${user} SMTP_PASS=${pass}`);
       err.statusCode = 503;
       throw err;
     }
