@@ -38,8 +38,17 @@ export const BiometricTerminal = ({ onExit, registrationId = null }) => {
   const [terminalError, setTerminalError] = useState(null);
   const [menuVisible, setMenuVisible] = useState(false);
   const [pushStatus, setPushStatus] = useState(null); // null, 'Sent', 'Failed', 'Error'
+  const [autoScan, setAutoScan] = useState(true); // idle continuous scanning (no button needed)
   const theme = useTheme();
-  
+
+  // Refs let the async idle-scan loop read the latest values without re-binding.
+  const statusRef = useRef(status);
+  const autoScanRef = useRef(autoScan);
+  const scanningRef = useRef(false); // a capture is currently in-flight
+  const idleTimerRef = useRef(null);
+  useEffect(() => { statusRef.current = status; }, [status]);
+  useEffect(() => { autoScanRef.current = autoScan; }, [autoScan]);
+
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
 
@@ -190,6 +199,35 @@ export const BiometricTerminal = ({ onExit, registrationId = null }) => {
     }
   };
 
+  // Idle continuous scanning: while the terminal sits IDLE, keep a silent capture
+  // open so a renter only has to place a finger — no button press. The bridge's
+  // /capture long-polls until a finger is read (or times out), then we loop.
+  const idleScanLoop = async () => {
+    if (!autoScanRef.current || scanningRef.current || statusRef.current !== 'IDLE') return;
+    scanningRef.current = true;
+    try {
+      await startScan(true); // silent: stays IDLE until a finger is actually read
+    } catch (e) {
+      // startScan handles its own UI errors; nothing to do here.
+    } finally {
+      scanningRef.current = false;
+      // If still idle and still enabled, queue the next listen (gentle delay).
+      if (autoScanRef.current && statusRef.current === 'IDLE') {
+        idleTimerRef.current = setTimeout(idleScanLoop, 1000);
+      }
+    }
+  };
+
+  // (Re)start the idle loop whenever we enter IDLE with auto-scan enabled.
+  useEffect(() => {
+    if (status === 'IDLE' && autoScan) {
+      idleTimerRef.current = setTimeout(idleScanLoop, 300);
+    }
+    return () => {
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    };
+  }, [status, autoScan]);
+
   const handlePrintTicket = async (ticket) => {
     try {
       let printerName = null;
@@ -281,7 +319,7 @@ export const BiometricTerminal = ({ onExit, registrationId = null }) => {
       case 'IDLE':
         return {
           title: 'SYSTEM READY',
-          subtitle: 'AWAITING BIOMETRIC INPUT',
+          subtitle: autoScan ? 'LISTENING — PLACE YOUR FINGER ON THE READER' : 'AWAITING BIOMETRIC INPUT',
           color: colors.primary,
           icon: 'fingerprint'
         };
@@ -348,6 +386,11 @@ export const BiometricTerminal = ({ onExit, registrationId = null }) => {
             onDismiss={closeMenu}
             anchor={<IconButton icon="cog" size={20} onPress={openMenu} style={styles.settingsButton} disabled={status === 'SCANNING'} />}
           >
+            <Menu.Item
+              leadingIcon={autoScan ? 'motion-sensor' : 'motion-sensor-off'}
+              onPress={() => { closeMenu(); setAutoScan((v) => !v); }}
+              title={autoScan ? 'Auto-Scan: ON' : 'Auto-Scan: OFF'}
+            />
             <Menu.Item leadingIcon="database-check" onPress={() => { closeMenu(); runDiagnostic(); }} title="Run Diagnostic" />
             <Menu.Item leadingIcon="printer" onPress={() => { closeMenu(); handlePrintTicket({ renterName: 'TEST USER', mealType: 'Non-Veggie', createdAt: new Date() }); }} title="Test Printer" />
             <Menu.Item leadingIcon="format-line-spacing" onPress={() => { closeMenu(); handlePrintTicket({ renterName: 'FEED', mealType: 'NONE', createdAt: new Date() }); }} title="Feed Paper" />
@@ -357,7 +400,7 @@ export const BiometricTerminal = ({ onExit, registrationId = null }) => {
           </Menu>
           <Surface style={styles.statusLabel} elevation={0}>
             <View style={[styles.statusDot, { backgroundColor: currentInfo.statusColor || colors.primary }]} />
-            <Text variant="labelSmall" style={styles.statusLabelText}>{status === 'SCANNING' ? 'SYSTEM ACTIVE' : 'TERMINAL READY'}</Text>
+            <Text variant="labelSmall" style={styles.statusLabelText}>{status === 'SCANNING' ? 'SYSTEM ACTIVE' : (status === 'IDLE' && autoScan ? 'LISTENING' : 'TERMINAL READY')}</Text>
           </Surface>
           {onExit && <IconButton icon="close" size={20} onPress={onExit} style={styles.exitButton} />}
         </View>
@@ -408,9 +451,18 @@ export const BiometricTerminal = ({ onExit, registrationId = null }) => {
 
             <View style={styles.actionsContainer}>
               {status === 'IDLE' ? (
-                <Button mode="contained" onPress={() => startScan(false)} style={styles.primaryActionButton} contentStyle={styles.actionButtonContent} icon="fingerprint">
-                  IDENTIFY & GENERATE TICKET
-                </Button>
+                autoScan ? (
+                  <View style={styles.listeningHint}>
+                    <ActivityIndicator size={18} color={colors.primary} />
+                    <Text variant="titleMedium" style={styles.listeningText}>
+                      PLACE YOUR FINGER TO SCAN
+                    </Text>
+                  </View>
+                ) : (
+                  <Button mode="contained" onPress={() => startScan(false)} style={styles.primaryActionButton} contentStyle={styles.actionButtonContent} icon="fingerprint">
+                    IDENTIFY & GENERATE TICKET
+                  </Button>
+                )
               ) : (
                 <Button mode="contained" onPress={reset} style={[styles.primaryActionButton, { backgroundColor: currentInfo.color }]} contentStyle={styles.actionButtonContent}>
                   {status === 'SCANNING' ? 'SYSTEM SCANNING...' : 'BACK TO HOME'}
@@ -465,6 +517,8 @@ const styles = StyleSheet.create({
   actionsContainer: { width: '100%' },
   primaryActionButton: { width: '100%', borderRadius: 16, backgroundColor: colors.primary },
   actionButtonContent: { height: 56 },
+  listeningHint: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, height: 56, borderRadius: 16, backgroundColor: colors.indigo50 },
+  listeningText: { color: colors.primary, fontWeight: '900', letterSpacing: 1 },
   footerStats: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 24 },
   statItem: { flexDirection: 'row', alignItems: 'center' },
   statText: { color: colors.slate500, fontWeight: '700' },
