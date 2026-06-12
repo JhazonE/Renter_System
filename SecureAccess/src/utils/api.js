@@ -11,29 +11,27 @@ import axios from 'axios';
  *   API_KEY     — the backend's API_KEY (only needed when the backend is public/cloud)
  */
 
-// Default backend: the production cloud (Railway). A LAN/local deployment can
-// override this per-terminal by saving BACKEND_URL in localStorage (Settings →
-// Network Configuration), e.g. http://192.168.1.100:5005/api.
-const CLOUD_API = 'https://rentersystem-production.up.railway.app/api';
+const LOCAL_HOST = 'localhost';
+const EMULATOR_HOST = '10.0.2.2'; // Standard Android emulator loopback to host
+
+// The cloud backend. Set BACKEND_URL in Settings → Network Configuration (plus
+// the Backend API Key) to point this terminal at the cloud.
+//   https://rentersystem-production.up.railway.app/api
 
 const getBaseUrl = () => {
   if (Platform.OS === 'web') {
     try {
       const savedUrl = localStorage.getItem('BACKEND_URL');
-      // Migration: the old build defaulted to localhost:5005. Treat that exact
-      // value as "no real override" so this cloud-default build takes effect.
-      if (savedUrl && /\/\/(localhost|127\.0\.0\.1):5005\//.test(savedUrl)) {
-        localStorage.removeItem('BACKEND_URL');
-      } else if (savedUrl && !savedUrl.includes(':5003')) {
-        // Guard: reject any URL that incorrectly points at the Biometric Bridge port
+      // Guard: reject any URL that incorrectly points at the Biometric Bridge port
+      if (savedUrl && !savedUrl.includes(':5003')) {
         return savedUrl;
       }
     } catch (e) {
       console.warn('Failed to read BACKEND_URL from localStorage', e);
     }
-    return CLOUD_API;
+    return `http://${LOCAL_HOST}:5005/api`;
   }
-  return CLOUD_API;
+  return `http://${EMULATOR_HOST}:5005/api`;
 };
 
 /**
