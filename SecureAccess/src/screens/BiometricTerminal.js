@@ -114,16 +114,16 @@ export const BiometricTerminal = ({ onExit, registrationId = null }) => {
   // Auto-reset when success or error screen is shown (V2.4.6)
   useEffect(() => {
     let timer;
-    if (status === 'SUCCESS' && mealTicket) {
+    if (status === 'SUCCESS') {
       console.log('Success state detected, starting auto-reset timer (5s)...');
       timer = setTimeout(() => {
         reset();
       }, 5000);
     } else if (status === 'ERROR') {
-      console.log('Error state detected, starting auto-reset timer (10s)...');
+      console.log('Error state detected, starting auto-reset timer (7s)...');
       timer = setTimeout(() => {
         reset();
-      }, 10000);
+      }, 7000);
     }
     return () => {
       if (timer) clearTimeout(timer);
@@ -505,10 +505,20 @@ export const BiometricTerminal = ({ onExit, registrationId = null }) => {
                     IDENTIFY & GENERATE TICKET
                   </Button>
                 )
+              ) : status === 'SCANNING' ? (
+                <View style={styles.listeningHint}>
+                  <ActivityIndicator size={18} color={currentInfo.color} />
+                  <Text variant="titleMedium" style={[styles.listeningText, { color: currentInfo.color }]}>
+                    SYSTEM SCANNING...
+                  </Text>
+                </View>
               ) : (
-                <Button mode="contained" onPress={reset} style={[styles.primaryActionButton, { backgroundColor: currentInfo.color }]} contentStyle={styles.actionButtonContent}>
-                  {status === 'SCANNING' ? 'SYSTEM SCANNING...' : 'BACK TO HOME'}
-                </Button>
+                // SUCCESS / ERROR: no button — auto-returns to home after a moment.
+                <View style={styles.listeningHint}>
+                  <Text variant="labelLarge" style={{ color: colors.slate400, fontWeight: '700', letterSpacing: 0.5 }}>
+                    Returning to home…
+                  </Text>
+                </View>
               )}
             </View>
           </View>
