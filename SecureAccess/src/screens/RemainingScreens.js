@@ -119,6 +119,7 @@ export const Registrations = () => {
   const { userRole, user, isAuthenticated } = usePermissions();
   const { showSnackbar } = useSnackbar();
   const [isFingerprinting, setIsFingerprinting] = useState(false);
+  const scanActiveRef = useRef(false); // true while an enrollment capture loop is running
   const [fingerprintProgress, setFingerprintProgress] = useState(0);
   const [scanCount, setScanCount] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
@@ -356,7 +357,8 @@ export const Registrations = () => {
     setIsFingerprinting(true);
     setFingerprintProgress(0);
     setScanCount(1);
-    
+    scanActiveRef.current = true;
+
     try {
       // 1. Check if the Biometric Service is running
       const isRunning = await BiometricService.isServiceRunning();
@@ -367,11 +369,36 @@ export const Registrations = () => {
       // 2. Start visual feedback
       runScan(1);
 
-      // 3. Trigger real hardware capture via SDK
+      // 3. Trigger real hardware capture. The .NET bridge captures for ~5s per
+      // call and returns a timeout if no finger is presented; retry across a few
+      // attempts so the admin has a comfortable window to place their finger.
+      // (capture() is bridge-authoritative now, so a timeout no longer falls
+      // through to the Web SDK — we drive the retries here instead.)
       console.log('Initiating SDK enrollment capture...');
-      const captureResult = await BiometricService.capture();
-      
-      if (captureResult.status === 'SUCCESS') {
+      let captureResult = null;
+      const maxAttempts = 6; // ~30s total
+      for (let attempt = 0; attempt < maxAttempts && scanActiveRef.current; attempt++) {
+        try {
+          const r = await BiometricService.capture();
+          if (r && r.status === 'SUCCESS') { captureResult = r; break; }
+        } catch (capErr) {
+          const m = capErr.message || '';
+          if (/timed out|no data received/i.test(m)) {
+            // No finger yet — give the reader a moment to fully release, then retry.
+            await new Promise((res) => setTimeout(res, 300));
+            continue;
+          }
+          throw capErr; // a real hardware/connection error
+        }
+      }
+
+      if (!scanActiveRef.current) return; // admin cancelled / closed the modal
+
+      if (!captureResult || captureResult.status !== 'SUCCESS') {
+        throw new Error('No fingerprint detected. Please place your finger firmly on the reader and try again.');
+      }
+
+      {
         console.log('SDK Enrollment Capture Success');
 
         // One renter = one biometric: make sure this fingerprint isn't already
@@ -824,7 +851,7 @@ export const Registrations = () => {
       <Portal>
         <Modal
           visible={isModalVisible}
-          onDismiss={() => { setIsModalVisible(false); setIsFingerprinting(false); }}
+          onDismiss={() => { setIsModalVisible(false); setIsFingerprinting(false); scanActiveRef.current = false; }}
           contentContainerStyle={styles.modalContainer}
         >
           <Card style={styles.modalCard}>
@@ -1062,7 +1089,7 @@ export const Registrations = () => {
             </ScrollView>
             <Card.Actions style={styles.modalActions}>
               <Button 
-                onPress={() => { setIsModalVisible(false); setIsFingerprinting(false); }} 
+                onPress={() => { setIsModalVisible(false); setIsFingerprinting(false); scanActiveRef.current = false; }} 
                 mode="text"
                 textColor={colors.slate500}
                 style={{ borderRadius: 10 }}
