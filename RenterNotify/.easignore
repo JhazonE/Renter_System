@@ -1,0 +1,28 @@
+# EAS upload ignore list. EAS uses THIS instead of .gitignore when present, so
+# it lets us ship google-services.json to the builder (still gitignored for the
+# repo) while keeping real secrets and heavy/native dirs out of the tarball.
+
+# Build artifacts / local junk
+node_modules/
+.expo/
+dist/
+web-build/
+*.log
+.DS_Store
+*.orig.*
+emulator*.png
+
+# Native projects — let EAS prebuild fresh from app.json so the uploaded
+# google-services.json is placed by the expo config plugin.
+android/
+ios/
+
+# Secrets that live in EAS credentials, NOT in the build tarball.
+GoogleService-Info.plist
+fcm-service-account.json
+*-firebase-adminsdk-*.json
+*.jks
+*.keystore
+
+# NOTE: google-services.json is intentionally NOT listed here — it must reach
+# the Android build for FCM/push to work.
