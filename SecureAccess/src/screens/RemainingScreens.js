@@ -452,19 +452,53 @@ export const Registrations = () => {
         </div>`;
       }));
 
+      // Print-robust layout: a fixed A4 page with a 2-column CSS grid of
+      // fixed-size cards. We avoid percentage widths + flex `gap` (browsers
+      // reflow those differently between the on-screen preview and the actual
+      // print engine) and force color printing so the teal QR/brand survive.
       const html = `<html><head><meta charset="utf-8"/><style>
-        * { box-sizing: border-box; font-family: -apple-system, Roboto, Arial, sans-serif; }
-        body { margin: 0; padding: 14px; }
-        .grid { display: flex; flex-wrap: wrap; gap: 12px; }
-        .card { width: 31%; border: 1.5px dashed #94a3b8; border-radius: 12px; padding: 14px; text-align: center; page-break-inside: avoid; }
-        .brand { color: #0F766E; font-weight: 700; font-size: 13px; margin-bottom: 8px; }
-        .qr svg { width: 150px; height: 150px; }
-        .name { font-weight: 700; font-size: 14px; margin-top: 8px; color: #0F172A; }
-        .reg { color: #0F766E; font-weight: 700; font-size: 13px; }
-        .hint { color: #64748b; font-size: 10px; margin-top: 6px; }
+        @page { size: A4 portrait; margin: 10mm; }
+        * { box-sizing: border-box; font-family: -apple-system, Roboto, Arial, sans-serif;
+            -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        html, body { margin: 0; padding: 0; }
+        .grid {
+          display: grid;
+          grid-template-columns: 90mm 90mm;
+          justify-content: center;
+          gap: 6mm;
+        }
+        .card {
+          width: 90mm;
+          height: 75mm;
+          border: 1px dashed #94a3b8;
+          border-radius: 4mm;
+          padding: 5mm;
+          text-align: center;
+          page-break-inside: avoid;
+          break-inside: avoid;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+        .brand { color: #0F766E; font-weight: 700; font-size: 12pt; margin-bottom: 2mm; }
+        .qr { line-height: 0; }
+        .qr svg { width: 35mm; height: 35mm; display: block; }
+        .name { font-weight: 700; font-size: 12pt; margin-top: 2mm; color: #0F172A; }
+        .reg { color: #0F766E; font-weight: 700; font-size: 11pt; }
+        .hint { color: #64748b; font-size: 8pt; margin-top: 2mm; }
       </style></head><body><div class="grid">${cards.join('')}</div></body></html>`;
 
-      await Print.printAsync({ html });
+      if (Platform.OS === 'web') {
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+          printWindow.document.write(html);
+          printWindow.document.close();
+          setTimeout(() => { printWindow.print(); }, 500);
+        }
+      } else {
+        await Print.printAsync({ html });
+      }
     } catch (e) {
       Alert.alert('Print failed', e?.message || 'Could not generate QR cards.');
     }
