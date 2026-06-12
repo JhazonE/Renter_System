@@ -14,6 +14,40 @@ import { registerPushToken } from '../api';
 import { saveSession } from '../storage';
 import QrScanner from './QrScanner';
 
+// Flat "metro style" QR-code glyph drawn with Views (no icon dependency / native
+// rebuild needed): three corner finder eyes plus a few data modules.
+function QrIcon({ size = 22, color = '#fff' }) {
+  const u = size / 11; // module unit on an ~11x11 grid
+  const eye = {
+    position: 'absolute',
+    width: u * 3.4,
+    height: u * 3.4,
+    borderWidth: Math.max(1.6, u * 0.75),
+    borderColor: color,
+    borderRadius: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  };
+  const pupil = { width: u * 1.1, height: u * 1.1, backgroundColor: color, borderRadius: 0.5 };
+  const dot = (top, left, s = u) => ({
+    position: 'absolute', top, left, width: s, height: s, backgroundColor: color, borderRadius: 0.5,
+  });
+  return (
+    <View style={{ width: size, height: size }}>
+      <View style={[eye, { top: 0, left: 0 }]}><View style={pupil} /></View>
+      <View style={[eye, { top: 0, right: 0 }]}><View style={pupil} /></View>
+      <View style={[eye, { bottom: 0, left: 0 }]}><View style={pupil} /></View>
+      {/* data modules (bottom-right quadrant) */}
+      <View style={dot(size * 0.52, size * 0.54)} />
+      <View style={dot(size * 0.52, size * 0.78)} />
+      <View style={dot(size * 0.70, size * 0.66)} />
+      <View style={dot(size * 0.70, size * 0.90)} />
+      <View style={dot(size * 0.88, size * 0.54)} />
+      <View style={dot(size * 0.88, size * 0.80)} />
+    </View>
+  );
+}
+
 export default function LoginScreen({ onLogin }) {
   const [registrationNumber, setRegistrationNumber] = useState('');
   const [phone, setPhone] = useState('');
@@ -105,7 +139,10 @@ export default function LoginScreen({ onLogin }) {
           onPress={() => setScanning(true)}
           disabled={loading}
         >
-          <Text style={styles.scanButtonText}>📷  Scan QR Code</Text>
+          <View style={styles.scanButtonRow}>
+            <QrIcon size={22} color="#fff" />
+            <Text style={styles.scanButtonText}>Scan QR Code</Text>
+          </View>
         </TouchableOpacity>
 
         <View style={styles.dividerRow}>
@@ -186,6 +223,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
   },
+  scanButtonRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   scanButtonText: { color: '#fff', fontSize: 17, fontWeight: '700' },
   dividerRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 18 },
   divider: { flex: 1, height: 1, backgroundColor: '#E2E8F0' },
