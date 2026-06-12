@@ -17,6 +17,23 @@ const SETTING_KEYS = {
   Dinner: 'meal_window_dinner'
 };
 
+// Meal windows are Philippine wall-clock times, but the server runs in UTC
+// (Railway). Read the wall clock in Asia/Manila so a 12 PH lunch scan isn't
+// mistaken for an early-morning (breakfast) UTC time.
+const PH_TZ = 'Asia/Manila';
+function phMinutesOfDay(date) {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: PH_TZ,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(date);
+  let h = parseInt(parts.find((p) => p.type === 'hour').value, 10);
+  const m = parseInt(parts.find((p) => p.type === 'minute').value, 10);
+  if (h === 24) h = 0; // some ICU builds emit "24" at midnight
+  return h * 60 + m;
+}
+
 /** Parse a single time token ("5:00 AM", "05:00", "2:30 PM") into minutes-from-midnight. */
 function parseTimeToMinutes(token) {
   if (!token) return null;
@@ -75,7 +92,7 @@ async function loadWindows(systemSettingsRepository) {
  * @returns {'Breakfast'|'Lunch'|'Dinner'|null}
  */
 function getMealPeriod(date, windows = DEFAULT_WINDOWS) {
-  const minutes = date.getHours() * 60 + date.getMinutes();
+  const minutes = phMinutesOfDay(date);
   for (const period of ['Breakfast', 'Lunch', 'Dinner']) {
     const w = parseWindow(windows[period]);
     if (w && minutes >= w.startMin && minutes < w.endMin) return period;
@@ -93,7 +110,7 @@ function getNearestMealPeriod(date, windows = DEFAULT_WINDOWS) {
   const inWindow = getMealPeriod(date, windows);
   if (inWindow) return inWindow;
 
-  const minutes = date.getHours() * 60 + date.getMinutes();
+  const minutes = phMinutesOfDay(date);
   let best = 'Dinner';
   let bestDist = Infinity;
   for (const period of ['Breakfast', 'Lunch', 'Dinner']) {
