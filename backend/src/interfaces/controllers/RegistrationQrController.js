@@ -11,7 +11,7 @@ class RegistrationQrController {
 
   _fields(reg) {
     return {
-      email: reg.email || null,
+      to: reg.email || null,
       name: reg.name || `${reg.firstName || reg.first_name || ''} ${reg.lastName || reg.last_name || ''}`.trim(),
       registrationNumber: reg.registrationNumber || reg.registration_number || null,
       phone: reg.parentPhone || reg.parent_phone || reg.studentPhone || reg.student_phone || null,
@@ -23,8 +23,8 @@ class RegistrationQrController {
       const reg = await this.registrationRepository.getById(req.params.id);
       if (!reg) return res.status(404).json({ error: 'Registration not found' });
       const f = this._fields(reg);
-      if (!f.registrationNumber || !f.phone) {
-        return res.status(400).json({ error: 'Registration is missing a registration number or phone.' });
+      if (!f.to || !f.registrationNumber || !f.phone) {
+        return res.status(400).json({ error: 'Registration is missing an email, registration number, or phone.' });
       }
       const result = await this.emailService.sendQr(f);
       res.json(result);
@@ -42,7 +42,7 @@ class RegistrationQrController {
       const errors = [];
       for (const reg of all) {
         const f = this._fields(reg);
-        if (!f.email || !f.registrationNumber || !f.phone) {
+        if (!f.to || !f.registrationNumber || !f.phone) {
           skipped++;
           continue;
         }
@@ -51,7 +51,7 @@ class RegistrationQrController {
           sent++;
         } catch (err) {
           failed++;
-          if (errors.length < 10) errors.push({ id: reg.id, email: f.email, error: err.message });
+          if (errors.length < 10) errors.push({ id: reg.id, email: f.to, error: err.message });
         }
       }
       res.json({ total: all.length, sent, skipped, failed, errors });

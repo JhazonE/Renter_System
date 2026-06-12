@@ -512,17 +512,21 @@ export const Registrations = () => {
     }
     try {
       setEmailingQr(true);
-      const res = await axios.post(`${API_BASE_URL}/registrations/send-qr-bulk`);
-      const { sent = 0, skipped = 0, failed = 0 } = res.data || {};
-      Alert.alert('QR emails', `Sent: ${sent}\nSkipped (no email/phone): ${skipped}\nFailed: ${failed}`);
+      const res = await axios.post(`${API_BASE_URL}/registrations/send-qr-bulk`, {}, {
+        headers: { 'x-user-role': userRole },
+      });
+      const { sent = 0, skipped = 0, failed = 0, errors = [] } = res.data || {};
+      const msg = `QR emails sent: ${sent} | Skipped (no email/phone): ${skipped} | Failed: ${failed}`;
+      showSnackbar(msg, failed > 0 ? 'error' : 'success');
+      const errDetail = errors.length > 0 ? '\n\nErrors:\n' + errors.map(e => `• ${e.email}: ${e.error}`).join('\n') : '';
+      if (typeof window !== 'undefined') window.alert(`QR Emails Done\n\nSent: ${sent}\nSkipped (no email/phone): ${skipped}\nFailed: ${failed}${errDetail}`);
     } catch (e) {
       const msg = e?.response?.data?.error || e.message || 'Failed to send emails.';
-      Alert.alert(
-        'Email failed',
-        /not configured/i.test(msg)
-          ? 'Email is not set up yet. Configure SMTP_HOST, SMTP_USER and SMTP_PASS on the backend.'
-          : msg
-      );
+      const friendly = /not configured/i.test(msg)
+        ? 'Email is not set up yet. Configure SMTP on the backend.'
+        : msg;
+      showSnackbar(friendly, 'error');
+      if (typeof window !== 'undefined') window.alert('Email failed: ' + friendly);
     } finally {
       setEmailingQr(false);
     }
