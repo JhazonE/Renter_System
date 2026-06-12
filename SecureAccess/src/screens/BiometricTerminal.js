@@ -26,6 +26,7 @@ import axios from 'axios';
 import { colors } from '../theme/colors';
 import { BiometricService } from '../utils/biometric';
 import { API_BASE_URL, BRIDGE_BASE_URL } from '../utils/api';
+import { usePermissions } from '../context/PermissionContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -40,6 +41,7 @@ export const BiometricTerminal = ({ onExit, registrationId = null }) => {
   const [pushStatus, setPushStatus] = useState(null); // null, 'Sent', 'Failed', 'Error'
   const [autoScan, setAutoScan] = useState(true); // idle continuous scanning (no button needed)
   const theme = useTheme();
+  const { userRole } = usePermissions();
 
   // Refs let the async idle-scan loop read the latest values without re-binding.
   const statusRef = useRef(status);
@@ -256,14 +258,54 @@ export const BiometricTerminal = ({ onExit, registrationId = null }) => {
     }
   };
 
+  // Resolve which renter a captured fingerprint belongs to, using the LOCAL
+  // bridge for FMD matching (the cloud backend can't reach the bridge). Returns
+  // the matched registration id, or null if not recognized.
+  const identifyViaBridge = async (fmdTemplate) => {
+    const res = await axios.get(`${API_BASE_URL}/registrations`, {
+      headers: { 'x-user-role': userRole },
+    });
+    const all = res.data || [];
+    const tplOf = (r) => r.biometricTemplate || r.biometric_template;
+    let candidates;
+    if (registrationId) {
+      // 1:1 verify — only the renter this terminal was opened for.
+      const one = all.find((r) => String(r.id) === String(registrationId));
+      candidates = one && tplOf(one) && tplOf(one).length > 50 ? [one] : [];
+    } else {
+      // 1:N identify — every enrolled renter.
+      candidates = all.filter((r) => (r.hasFingerprint || r.has_fingerprint) && tplOf(r) && tplOf(r).length > 50);
+    }
+    if (candidates.length === 0) return null;
+
+    const idRes = await fetch(`${BRIDGE_BASE_URL}/identify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ probe: fmdTemplate, candidates: candidates.map(tplOf) }),
+    });
+    if (!idRes.ok) throw new Error('Identification service error');
+    const d = await idRes.json();
+    if (d.status === 'SUCCESS' && d.matchedIndex !== undefined && d.matchedIndex !== -1) {
+      return candidates[d.matchedIndex].id;
+    }
+    return null;
+  };
+
   const handleGenerateMealTicket = async (fmdTemplate) => {
     try {
       setIsGenerating(true);
       setTerminalError(null);
+
+      // Identify locally first, then generate by ID only (no template sent to the
+      // cloud, so the backend never tries to call the unreachable bridge).
+      const matchedId = await identifyViaBridge(fmdTemplate);
+      if (!matchedId) {
+        throw new Error('Biometric identification failed: Fingerprint not recognized');
+      }
+
       const response = await axios.post(`${API_BASE_URL}/meal-tickets/generate`, {
-        registrationId: registrationId,
+        registrationId: matchedId,
         mealType: null,
-        biometricTemplate: fmdTemplate 
       });
       setMealTicket(response.data);
       setProgress(1);
