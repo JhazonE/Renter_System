@@ -1,0 +1,16 @@
+{
+  "name": "renternotify-web",
+  "version": "1.0.0",
+  "description": "Download landing page for the RenterNotify Android app",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

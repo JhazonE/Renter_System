@@ -1,7 +1,20 @@
 class PushController {
-  constructor(registerPushToken, pushTokenRepository) {
+  constructor(registerPushToken, pushTokenRepository, getRenterAlerts) {
     this.registerPushToken = registerPushToken;
     this.pushTokenRepository = pushTokenRepository;
+    this.getRenterAlerts = getRenterAlerts;
+  }
+
+  // Web alerts page: return a renter's recent meal-ticket alerts, gated by phone.
+  async alerts(req, res) {
+    try {
+      const { registrationNumber, phone, limit } = req.body;
+      const result = await this.getRenterAlerts.execute({ registrationNumber, phone, limit });
+      res.status(200).json(result);
+    } catch (error) {
+      console.error('Error fetching renter alerts:', error.message);
+      res.status(error.statusCode || 500).json({ error: error.message });
+    }
   }
 
   async register(req, res) {

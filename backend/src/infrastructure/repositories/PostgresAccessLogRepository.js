@@ -9,6 +9,20 @@ class PostgresAccessLogRepository {
     return rows;
   }
 
+  // Recent meal-ticket alerts for one renter (matched by registration name),
+  // used by the web alerts page. Only the notification-worthy log types.
+  async getByRenterName(name, limit = 30) {
+    const query = `
+      SELECT id, name, type, status, date, time, created_at
+      FROM access_logs
+      WHERE name = $1 AND type IN ('Biometric Scan', 'Manual Ticket')
+      ORDER BY created_at DESC
+      LIMIT $2
+    `;
+    const { rows } = await this.db.query(query, [name, limit]);
+    return rows;
+  }
+
   async create(logData) {
     const query = `
       INSERT INTO access_logs (name, dept, point, location, type, status, date, time, avatar, push_status)

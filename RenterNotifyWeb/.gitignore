@@ -1,0 +1,6 @@
+node_modules/
+npm-debug.log
+
+# The APK is large; keep it out of git. It is uploaded to Railway either by
+# `railway up` (local files) or by committing it for a GitHub deploy — see README.
+downloads/*.apk

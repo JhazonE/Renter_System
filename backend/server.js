@@ -59,6 +59,7 @@ const GetAuditLogs = require('./src/application/use-cases/GetAuditLogs');
 const CreateAuditLog = require('./src/application/use-cases/CreateAuditLog');
 const PushNotificationService = require('./src/infrastructure/services/PushNotificationService');
 const RegisterPushToken = require('./src/application/use-cases/RegisterPushToken');
+const GetRenterAlerts = require('./src/application/use-cases/GetRenterAlerts');
 
 const SetMealTicketExpiration = require('./src/application/use-cases/SetMealTicketExpiration');
 const GetExpiredMealTickets = require('./src/application/use-cases/GetExpiredMealTickets');
@@ -140,6 +141,7 @@ const toggleMealTicketAllowance = new ToggleMealTicketAllowance(registrationRepo
 const getAccessLogs = new GetAccessLogs(accessLogRepository);
 const createAccessLog = new CreateAccessLog(accessLogRepository, registrationRepository, systemSettingsRepository, pushNotificationService, pushTokenRepository);
 const registerPushToken = new RegisterPushToken(pushTokenRepository, registrationRepository);
+const getRenterAlerts = new GetRenterAlerts(accessLogRepository, registrationRepository);
 const getAuditLogs = new GetAuditLogs(auditLogRepository);
 const createAuditLog = new CreateAuditLog(auditLogRepository);
 const getReportSummary = new GetReportSummary(registrationRepository, accessLogRepository, mealTicketRepository, systemSettingsRepository);
@@ -167,7 +169,7 @@ const accessLogController = new AccessLogController(getAccessLogs, createAccessL
 const auditLogController = new AuditLogController(getAuditLogs, createAuditLog);
 const reportController = new ReportController(getReportSummary);
 const systemController = new SystemController(resetData, exportDataExcel, exportDataSQL, systemSettingsRepository);
-const pushController = new PushController(registerPushToken, pushTokenRepository);
+const pushController = new PushController(registerPushToken, pushTokenRepository, getRenterAlerts);
 const emailService = new EmailService();
 const registrationQrController = new RegistrationQrController(registrationRepository, emailService);
 

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Renter Notify — Download the App</title>
+  <meta name="description" content="Download the Renter Notify Android app to get instant alerts whenever your meal ticket is scanned." />
+  <link rel="icon" href="/assets/icon.png" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <img src="/assets/icon.png" alt="Renter Notify" class="brand-icon" />
+      <span class="brand-name">Renter Notify</span>
+    </div>
+    <span class="platform-pill">Android</span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <img src="/assets/icon.png" alt="Renter Notify app icon" class="hero-icon" />
+      <h1>Renter Notify</h1>
+      <p class="tagline">
+        Get an <strong>instant notification</strong> on your phone
+        every time your meal ticket or access QR is scanned.
+      </p>
+
+      <a href="/download" class="download-btn" id="downloadBtn">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path fill="currentColor" d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4 6.3 11.7l1.4-1.4L11 13.6V3h1zM5 19h14v2H5v-2z"/>
+        </svg>
+        Download the APK
+      </a>
+      <p class="release-meta" id="releaseMeta">Android 7.0 or newer</p>
+      <p class="web-alt">
+        On iPhone or don't want to install? <a href="/app.html">Open meal-ticket alerts in your browser →</a>
+      </p>
+    </section>
+
+    <section class="features">
+      <article class="card">
+        <div class="card-emoji">🔔</div>
+        <h3>Real-time Alerts</h3>
+        <p>Get a push notification the moment you're scanned, even when the app is closed.</p>
+      </article>
+      <article class="card">
+        <div class="card-emoji">📷</div>
+        <h3>QR Scan</h3>
+        <p>Scan your Renter Notify QR to connect to your account.</p>
+      </article>
+      <article class="card">
+        <div class="card-emoji">🕑</div>
+        <h3>Recent Activity</h3>
+        <p>View your alerts from the last 24 hours.</p>
+      </article>
+    </section>
+
+    <section class="install">
+      <h2>How to install</h2>
+      <ol class="steps">
+        <li>Tap <strong>Download the APK</strong> above. Allow the download if prompted.</li>
+        <li>Open the downloaded <code>Renter-Notify.apk</code> from your notifications or Files.</li>
+        <li>If Android blocks it, tap <strong>Settings</strong> → enable
+          <strong>“Install unknown apps”</strong> for your browser or Files app.</li>
+        <li>Tap <strong>Install</strong>, then open the app and scan your QR code.</li>
+      </ol>
+      <p class="note">Android only. No iOS version at the moment.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Renter Notify · Beulah Information Technology</p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Show APK size / availability from the server.
+    fetch('/api/release')
+      .then((r) => r.json())
+      .then((info) => {
+        const meta = document.getElementById('releaseMeta');
+        const btn = document.getElementById('downloadBtn');
+        if (info.available) {
+          meta.textContent = `Android 7.0 or newer · ${info.sizeMb} MB`;
+        } else {
+          meta.textContent = 'The APK is not uploaded yet — please check back later.';
+          btn.classList.add('disabled');
+          btn.setAttribute('aria-disabled', 'true');
+          btn.addEventListener('click', (e) => e.preventDefault());
+        }
+      })
+      .catch(() => {});
+  </script>
+</body>
+</html>

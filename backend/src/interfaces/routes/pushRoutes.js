@@ -9,6 +9,9 @@ const createPushRoutes = (controller) => {
   // App removes its token (logout / uninstall cleanup).
   router.post('/unregister', (req, res) => controller.unregister(req, res));
 
+  // Web alerts page: recent meal-ticket alerts for a renter (verified by phone).
+  router.post('/alerts', (req, res) => controller.alerts(req, res));
+
   return router;
 };
 
