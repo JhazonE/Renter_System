@@ -1,20 +1,21 @@
 jest.mock('../config', () => ({ API_BASE_URL: 'http://test', MOBILE_API_KEY: '' }));
 
+let mockPost;
 jest.mock('axios', () => ({
   __esModule: true,
   default: {
-    create: jest.fn(() => ({
-      post: jest.fn(),
-    })),
+    create: jest.fn(() => {
+      mockPost = jest.fn();
+      return { post: mockPost };
+    }),
   },
 }));
 
-import { client } from '../api';
 import { fetchAlerts } from '../api';
 
-const mockPost = client.post;
-
-beforeEach(() => mockPost.mockReset());
+beforeEach(() => {
+  if (mockPost) mockPost.mockReset();
+});
 
 test('posts registration, phone and limit and returns data', async () => {
   mockPost.mockResolvedValue({ data: { alerts: [{ id: 1 }] } });

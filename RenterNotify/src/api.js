@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_BASE_URL, MOBILE_API_KEY } from './config';
 
-export const client = axios.create({
+const client = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
   // Sent only when configured; the backend ignores it when MOBILE_API_KEY is unset.
