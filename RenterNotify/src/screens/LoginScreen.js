@@ -80,6 +80,7 @@ export default function LoginScreen({ onLogin }) {
         registrationNumber: result.registration.registrationNumber,
         name: result.registration.name,
         recipientType: result.recipientType,
+        phone: phoneNo,
         expoToken,
       };
       await saveSession(session);

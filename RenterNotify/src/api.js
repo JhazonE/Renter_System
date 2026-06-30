@@ -34,3 +34,21 @@ export async function unregisterPushToken(expoToken) {
     console.warn('unregister failed:', err.message);
   }
 }
+
+// Fetches the renter's recent meal-ticket alerts from the backend access logs,
+// gated by registration + phone (same endpoint the web alerts page uses). This
+// is the source of truth for the in-app list, so nothing is missed while the app
+// is closed. Throws with a friendly message on failure.
+export async function fetchAlerts({ registrationNumber, phone, limit = 100 }) {
+  try {
+    const { data } = await client.post('/api/push/alerts', {
+      registrationNumber,
+      phone,
+      limit,
+    });
+    return data;
+  } catch (err) {
+    const message = err.response?.data?.error || err.message || 'Network error';
+    throw new Error(message);
+  }
+}
