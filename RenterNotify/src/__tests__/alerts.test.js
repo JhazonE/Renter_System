@@ -1,4 +1,4 @@
-import { fillTemplate, prettyTime, ALERTS_RETENTION_MS } from '../alerts';
+import { fillTemplate, prettyTime, ALERTS_RETENTION_MS, mapServerAlert, mapAndPruneAlerts } from '../alerts';
 
 describe('fillTemplate', () => {
   test('substitutes all tokens', () => {
@@ -35,8 +35,6 @@ test('retention window is 30 days in ms', () => {
   expect(ALERTS_RETENTION_MS).toBe(30 * 24 * 60 * 60 * 1000);
 });
 
-import { mapServerAlert, mapAndPruneAlerts } from '../alerts';
-
 const REGISTRATION = { name: 'Ana', mealType: 'Veggie' };
 const NOTIFICATION = {
   titleTemplate: 'Meal Ticket Used',
@@ -53,6 +51,13 @@ describe('mapServerAlert', () => {
     expect(out.at).toBe(Date.parse('2026-06-30T00:15:30.000Z'));
     expect(typeof out.receivedAt).toBe('string');
     expect(out.receivedAt.length).toBeGreaterThan(0);
+  });
+
+  test('returns at=0 when createdAt is missing', () => {
+    const log = { id: 9, time: '07:00:00 AM' };
+    const out = mapServerAlert(log, REGISTRATION, NOTIFICATION);
+    expect(out.at).toBe(0);
+    expect(out.body).toBe('Hi! Ana used their Veggie meal ticket at 7:00 AM.');
   });
 });
 
