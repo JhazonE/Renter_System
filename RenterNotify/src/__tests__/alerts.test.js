@@ -34,3 +34,55 @@ describe('prettyTime', () => {
 test('retention window is 30 days in ms', () => {
   expect(ALERTS_RETENTION_MS).toBe(30 * 24 * 60 * 60 * 1000);
 });
+
+import { mapServerAlert, mapAndPruneAlerts } from '../alerts';
+
+const REGISTRATION = { name: 'Ana', mealType: 'Veggie' };
+const NOTIFICATION = {
+  titleTemplate: 'Meal Ticket Used',
+  bodyTemplate: 'Hi! {name} used their {mealType} meal ticket at {time}.',
+};
+
+describe('mapServerAlert', () => {
+  test('builds title/body/at/receivedAt from a log row', () => {
+    const log = { id: 7, time: '08:15:30 AM', createdAt: '2026-06-30T00:15:30.000Z' };
+    const out = mapServerAlert(log, REGISTRATION, NOTIFICATION);
+    expect(out.id).toBe(7);
+    expect(out.title).toBe('Meal Ticket Used');
+    expect(out.body).toBe('Hi! Ana used their Veggie meal ticket at 8:15 AM.');
+    expect(out.at).toBe(Date.parse('2026-06-30T00:15:30.000Z'));
+    expect(typeof out.receivedAt).toBe('string');
+    expect(out.receivedAt.length).toBeGreaterThan(0);
+  });
+});
+
+describe('mapAndPruneAlerts', () => {
+  const now = Date.parse('2026-06-30T00:00:00.000Z');
+  const iso = (msAgo) => new Date(now - msAgo).toISOString();
+  const DAY = 24 * 60 * 60 * 1000;
+
+  const payload = {
+    registration: REGISTRATION,
+    notification: NOTIFICATION,
+    alerts: [
+      { id: 1, time: '08:00:00 AM', createdAt: iso(2 * DAY) },   // recent
+      { id: 2, time: '09:00:00 AM', createdAt: iso(29 * DAY) },  // inside window
+      { id: 3, time: '10:00:00 AM', createdAt: iso(31 * DAY) },  // pruned
+    ],
+  };
+
+  test('drops alerts older than 30 days', () => {
+    const out = mapAndPruneAlerts(payload, now);
+    expect(out.map((a) => a.id)).toEqual([1, 2]);
+  });
+
+  test('sorts newest-first', () => {
+    const reordered = { ...payload, alerts: [payload.alerts[1], payload.alerts[0]] };
+    const out = mapAndPruneAlerts(reordered, now);
+    expect(out.map((a) => a.id)).toEqual([1, 2]);
+  });
+
+  test('tolerates missing alerts array', () => {
+    expect(mapAndPruneAlerts({ registration: REGISTRATION, notification: NOTIFICATION }, now)).toEqual([]);
+  });
+});

@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ALERTS_RETENTION_MS } from './alerts';
 
 const SESSION_KEY = 'renter_notify_session';
 
@@ -19,8 +20,10 @@ export async function clearSession() {
 
 // Recent alerts persist across app restarts but only for ONE MONTH — anything
 // older than 30 days is dropped on load/save so the list self-prunes.
+// The retention window lives in ./alerts (native-decoupled); re-export for
+// existing importers.
 const ALERTS_KEY = 'renter_notify_alerts';
-export const ALERTS_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
+export { ALERTS_RETENTION_MS };
 
 export async function loadAlerts() {
   const raw = await AsyncStorage.getItem(ALERTS_KEY);

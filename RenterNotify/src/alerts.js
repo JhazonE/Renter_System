@@ -33,3 +33,31 @@ export function phReceivedAt(date) {
     hour12: true,
   });
 }
+
+// Convert one server access-log row into the app's alert shape.
+export function mapServerAlert(log, registration, notification) {
+  const vars = {
+    name: registration?.name,
+    mealType: registration?.mealType,
+    time: prettyTime(log?.time),
+  };
+  const at = Date.parse(log?.createdAt) || 0;
+  return {
+    id: log?.id,
+    title: fillTemplate(notification?.titleTemplate, vars),
+    body: fillTemplate(notification?.bodyTemplate, vars),
+    at,
+    receivedAt: phReceivedAt(new Date(at)),
+  };
+}
+
+// Map a full /api/push/alerts payload to app alerts, newest-first, pruned to the
+// last 30 days.
+export function mapAndPruneAlerts(payload, now = Date.now()) {
+  const cutoff = now - ALERTS_RETENTION_MS;
+  const { registration, notification } = payload || {};
+  return (payload?.alerts || [])
+    .map((log) => mapServerAlert(log, registration, notification))
+    .filter((a) => a.at >= cutoff)
+    .sort((a, b) => b.at - a.at);
+}
