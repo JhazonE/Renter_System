@@ -24,7 +24,8 @@ export default function App() {
     sessionRef.current = session;
   }, [session]);
 
-  // Restore an existing session + the last day's alerts on launch.
+  // Restore an existing session + the cached alerts on launch, then refresh
+  // the list from the server (the source of truth).
   useEffect(() => {
     (async () => {
       const stored = await loadSession();
