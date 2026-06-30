@@ -1,5 +1,6 @@
 import {
   FlatList,
+  RefreshControl,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -8,7 +9,7 @@ import {
 import { unregisterPushToken } from '../api';
 import { clearSession } from '../storage';
 
-export default function HomeScreen({ session, notifications, onLogout }) {
+export default function HomeScreen({ session, notifications, onLogout, onRefresh, refreshing, error }) {
   const handleLogout = async () => {
     if (session?.expoToken) {
       await unregisterPushToken(session.expoToken);
@@ -44,10 +45,19 @@ export default function HomeScreen({ session, notifications, onLogout }) {
       </View>
 
       <Text style={styles.sectionTitle}>Recent Alerts</Text>
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <FlatList
         data={notifications}
-        keyExtractor={(item, index) => String(index)}
+        keyExtractor={(item) => String(item.id ?? item.at)}
         renderItem={renderItem}
+        refreshControl={
+          <RefreshControl
+            refreshing={!!refreshing}
+            onRefresh={onRefresh}
+            colors={['#0F766E']}
+            tintColor="#0F766E"
+          />
+        }
         ListEmptyComponent={
           <Text style={styles.empty}>
             No alerts yet. You'll see meal-ticket notifications here.
@@ -93,6 +103,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 10,
   },
+  errorText: { color: '#DC2626', fontSize: 12, paddingHorizontal: 20, marginBottom: 8 },
   notif: {
     backgroundColor: '#fff',
     marginHorizontal: 20,
