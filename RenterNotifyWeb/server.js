@@ -30,7 +30,9 @@ app.post('/api/my-alerts', async (req, res) => {
         'Content-Type': 'application/json',
         ...(MOBILE_API_KEY ? { 'x-api-key': MOBILE_API_KEY } : {}),
       },
-      body: JSON.stringify({ registrationNumber, phone, limit: 30 }),
+      // Request enough rows to cover a full 30-day window (~2-3 meals/day); the
+      // client trims to the last 30 days so the web matches the app's retention.
+      body: JSON.stringify({ registrationNumber, phone, limit: 100 }),
     });
     const data = await upstream.json().catch(() => ({}));
     res.status(upstream.status).json(data);

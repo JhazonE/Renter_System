@@ -108,6 +108,15 @@ function captureConfig(data) {
   }
 }
 
+// Keep only alerts from the last 30 days, mirroring the app's ALERTS_RETENTION_MS
+// (Date.parse(createdAt) || 0) >= cutoff), so the web shows the same "last 30
+// days" window as the app instead of a fixed number of rows.
+const RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
+function within30Days(alerts) {
+  const cutoff = Date.now() - RETENTION_MS;
+  return (alerts || []).filter((a) => (Date.parse(a.createdAt) || 0) >= cutoff);
+}
+
 function renderAlerts(data, freshIds) {
   $('whoName').textContent = data.registration?.name || 'Renter';
   const role = data.recipientType === 'parent' ? 'Parent' : 'Student';
@@ -162,6 +171,7 @@ async function fetchAlerts() {
 
   captureConfig(data);
 
+  data.alerts = within30Days(data.alerts);
   const incoming = data.alerts || [];
   const freshIds = new Set();
   if (!firstLoad) {
@@ -210,6 +220,7 @@ async function signIn(registrationNumber, phone) {
     firstLoad = true;
 
     captureConfig(data);
+    data.alerts = within30Days(data.alerts);
     signinCard.style.display = 'none';
     panel.style.display = 'block';
     renderAlerts(data, new Set());
