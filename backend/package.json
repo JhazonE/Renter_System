@@ -18,7 +18,7 @@
   "scripts": {
     "start": "node server.js",
     "build:pkg": "pkg . --targets node18-win-x64 --output dist/server.exe",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test --require ./test/setup-tz.js test/*.test.js"
   },
   "keywords": [],
   "author": "",

@@ -1,6 +1,6 @@
 const axios = require('axios');
 const MealTicket = require('../../domain/entities/MealTicket');
-const { loadWindows, getNearestMealPeriod, toLocalNaive } = require('../../shared/mealPeriods');
+const { loadWindows, getPeriodForLimit, phDateString, toLocalNaive } = require('../../shared/mealPeriods');
 
 class GenerateMealTicket {
   constructor(mealTicketRepository, registrationRepository, systemSettingsRepository) {
@@ -108,36 +108,50 @@ class GenerateMealTicket {
       if (restrictionEnabled === 'true') {
         const windows = await loadWindows(this.systemSettingsRepository);
         const now = new Date();
-        // Use the NEAREST period, never null. The strict getMealPeriod() returns
-        // null in the gaps between windows (e.g. 10:00-11:00 AM), which used to
-        // bypass the limit entirely and let a student re-claim. getNearestMealPeriod
-        // attributes every scan -- in-window or off-hours -- to one of the three
-        // meal services so the limit always applies.
-        mealPeriod = getNearestMealPeriod(now, windows);
 
-        // Count this student's tickets across the WHOLE local day, then bucket
-        // each one by its own nearest period. A whole-day scan is required (not
-        // just the period's window bounds) because a gap-generated ticket lands
-        // outside any window and would otherwise escape the per-period count.
-        // Local wall-clock bounds: generated_at is TIMESTAMP WITHOUT TIME ZONE and
-        // Postgres treats an ISO "Z" bound as naive. See toLocalNaive() for details.
-        const dayStart = new Date(now);
-        dayStart.setHours(0, 0, 0, 0);
-        const dayEnd = new Date(dayStart);
-        dayEnd.setDate(dayEnd.getDate() + 1);
+        // Which meal slot this scan consumes. getPeriodForLimit charges an
+        // off-hours scan to the window that just CLOSED, so re-scanning after
+        // service ends can't double-claim that meal. Crucially it never looks
+        // forward: a scan before the day's first window opens (e.g. 1 AM)
+        // consumes nothing, instead of burning the breakfast the student has
+        // not had yet. getNearestMealPeriod does look forward and is why
+        // students were told a set was "already claimed" when it wasn't.
+        mealPeriod = getPeriodForLimit(now, windows);
 
-        const todaysTickets = await this.mealTicketRepository.getByRegistrationInRange(
-          registrationId,
-          toLocalNaive(dayStart),
-          toLocalNaive(dayEnd)
-        );
-        const alreadyForPeriod = (todaysTickets || []).some(t => {
-          const genAt = new Date(t.generatedAt);
-          return !isNaN(genAt.getTime()) && getNearestMealPeriod(genAt, windows) === mealPeriod;
-        });
-        if (alreadyForPeriod) {
-          log(`[GenerateMealTicket] RID ${registrationId} already claimed ${mealPeriod} today`);
-          throw new Error(`${mealPeriod} meal already claimed today. Only one ${mealPeriod} ticket is allowed per student.`);
+        // null = no meal service has happened yet today, so there is no slot to
+        // consume and nothing to check.
+        if (mealPeriod) {
+          // Bucket by the PHILIPPINE day, not the server-local day. generated_at is
+          // TIMESTAMP WITHOUT TIME ZONE holding the DB's wall clock (UTC on Railway),
+          // 8 hours behind PH. A server-local day window both merges two PH days
+          // (false "already claimed" denials) and splits one PH day in two (letting
+          // the same meal be claimed twice). So over-fetch a +/-1 day range and filter
+          // precisely by PH calendar date in JS -- the approach GetReportSummary uses.
+          const today = phDateString(now);
+          const queryStart = new Date(now);
+          queryStart.setDate(queryStart.getDate() - 1);
+          queryStart.setHours(0, 0, 0, 0);
+          const queryEnd = new Date(now);
+          queryEnd.setDate(queryEnd.getDate() + 2);
+          queryEnd.setHours(0, 0, 0, 0);
+
+          const candidateTickets = await this.mealTicketRepository.getByRegistrationInRange(
+            registrationId,
+            toLocalNaive(queryStart),
+            toLocalNaive(queryEnd)
+          );
+
+          const alreadyForPeriod = (candidateTickets || []).some(t => {
+            const genAt = new Date(t.generatedAt);
+            if (isNaN(genAt.getTime())) return false;
+            if (phDateString(genAt) !== today) return false;
+            return getPeriodForLimit(genAt, windows) === mealPeriod;
+          });
+
+          if (alreadyForPeriod) {
+            log(`[GenerateMealTicket] RID ${registrationId} already claimed ${mealPeriod} today`);
+            throw new Error(`${mealPeriod} meal already claimed today. Only one ${mealPeriod} ticket is allowed per student.`);
+          }
         }
       }
     }

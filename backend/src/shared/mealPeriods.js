@@ -103,7 +103,11 @@ function getMealPeriod(date, windows = DEFAULT_WINDOWS) {
 /**
  * Like getMealPeriod, but never returns null: a time outside every window is
  * attributed to the closest meal period. Used for REPORTS so an off-hours scan
- * still appears somewhere (the strict getMealPeriod is used for the 1-meal limit).
+ * still appears somewhere.
+ *
+ * Do NOT use this for the 1-meal limit -- "closest" looks forward as well as
+ * back, so a 4 PM scan is charged to a Dinner service that has not started yet
+ * and the student is refused at 6 PM. Use getPeriodForLimit instead.
  * @returns {'Breakfast'|'Lunch'|'Dinner'}
  */
 function getNearestMealPeriod(date, windows = DEFAULT_WINDOWS) {
@@ -125,6 +129,50 @@ function getNearestMealPeriod(date, windows = DEFAULT_WINDOWS) {
     }
   }
   return best;
+}
+
+/**
+ * Which meal slot a scan consumes for the 1-meal-per-period limit.
+ *
+ * In-window scans map to their own period. A scan in a gap is charged to the
+ * window that most recently CLOSED, so re-scanning just after service ends
+ * cannot double-claim that meal. A scan before the PH day's first window opens
+ * (e.g. 1 AM) consumes nothing and returns null -- it belongs to no service
+ * yet, and charging it to Breakfast is what denied students their actual
+ * breakfast. Never looks forward to a service that has not happened.
+ *
+ * @returns {'Breakfast'|'Lunch'|'Dinner'|null} null = consumes no meal slot
+ */
+function getPeriodForLimit(date, windows = DEFAULT_WINDOWS) {
+  const inWindow = getMealPeriod(date, windows);
+  if (inWindow) return inWindow;
+
+  const minutes = phMinutesOfDay(date);
+  let best = null;
+  let bestEnd = -Infinity;
+  for (const period of ['Breakfast', 'Lunch', 'Dinner']) {
+    const w = parseWindow(windows[period]);
+    if (!w) continue;
+    // Only windows already finished are candidates; pick the latest-ending one.
+    if (minutes >= w.endMin && w.endMin > bestEnd) {
+      bestEnd = w.endMin;
+      best = period;
+    }
+  }
+  return best;
+}
+
+/**
+ * The Philippine calendar date ("YYYY-MM-DD") for an instant.
+ *
+ * The 1-meal limit and the reports both bucket by PH wall clock, so "today"
+ * must be the PH day too. Using the server-local day (UTC on Railway) shifts
+ * the boundary by 8 hours: it merges two PH days into one -- causing false
+ * "already claimed" denials -- and splits a single PH day in two, which let a
+ * student claim the same meal twice.
+ */
+function phDateString(date) {
+  return date.toLocaleDateString('en-CA', { timeZone: PH_TZ });
 }
 
 /**
@@ -166,6 +214,8 @@ module.exports = {
   loadWindows,
   getMealPeriod,
   getNearestMealPeriod,
+  getPeriodForLimit,
+  phDateString,
   getPeriodBounds,
   toLocalNaive
 };
